@@ -15,12 +15,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+
+
 
 @Entity
-@EntityListeners(AuditingEntityListener.class) //entity (varlık) nesnelerinde otomatik olarak tarih/saat gibi izleme (auditing) alanlarını doldurmak için kullanılan bir dinleyicidir.JPA tarafından sağlanır.
+@EntityListeners(AuditingEntityListener.class) //entity nesnelerinde otomatik olarak tarih/saat gibi izleme alanlarını doldurmak için kullanılan dinleyicidir.JPA tarafından sağlanır.
 @Table(name = "users")
 public class User {
 
@@ -29,24 +28,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Kullanıcı adı boş olamaz!")
-    @Size(min = 3, max = 20, message = "Kullanıcı adı 3-20 karakter arasında olmalıdır!")
     @Column(nullable = false, unique = true)
     private String username;
 
-    @NotBlank(message = "Email boş olamaz!")
-    @Size(max = 50, message = "Email 50 karakterden uzun olamaz!")
-    @Email(message = "Geçerli bir email adresi giriniz!")
     @Column(nullable = false, unique = true)
     private String email;
 
-    // Şifre hash'ini saklamak için kullanılır, bu nedenle boş olamaz. Burda validasyon yok çünü şifre hash'i genellikle uygulama tarafından oluşturulur ve doğrulanır.
+    // Hashli şifre tutulur. Burda validasyon yok çünü şifre hashi genellikle uygulama tarafından oluşturulur ve doğrulanır.
     @Column(nullable = false)
     private String password_hash;
    
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role role = Role.ROLE_USER; // Varsayılan olarak ROLE_USER olarak ayarlanır
+    private Role role; 
 
     @CreationTimestamp
     @Column(name = "created_at" ,nullable = false, updatable = false)
