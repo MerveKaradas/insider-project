@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.web.demo.dto.Request.LoginRequest;
+import com.web.demo.dto.Request.LoginRequestDto;
 import com.web.demo.dto.Request.UserRequestDto;
 
 import com.web.demo.dto.Response.UserResponseDto;
@@ -36,7 +36,7 @@ public class UserManagementController {
     }
     
     @GetMapping("/")
-    @PreAuthorize("hasRole('ADMIN')") // sadece admin erişimi
+   // @PreAuthorize("hasRole('ADMIN')") // sadece admin erişimi
     public ResponseEntity<List<UserResponseDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
@@ -61,7 +61,7 @@ public class UserManagementController {
 
     // Giriş yapan kullanıcıya token dönecek
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto request) {
         User user = userService.login(request.getEmail(), request.getPassword());
         String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
         return ResponseEntity.ok(Collections.singletonMap("token", token));
