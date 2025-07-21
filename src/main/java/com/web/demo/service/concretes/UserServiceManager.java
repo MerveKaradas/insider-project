@@ -11,6 +11,8 @@ import com.web.demo.repository.abstracts.UserRepository;
 import com.web.demo.service.abstracts.UserService;
 import org.springframework.transaction.annotation.Transactional;
 import com.web.demo.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +22,8 @@ public class UserServiceManager implements  UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceManager.class);
 
     public UserServiceManager(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -45,12 +49,14 @@ public class UserServiceManager implements  UserService {
 
         // Veritabanına kaydet
         userRepository.save(user);
+        logger.info("Yeni kullanıcı kaydedildi: {}", user.getEmail());
 
         // Entity'den Response DTO 
         return UserMapper.toDto(user);
     }
 
     public List<UserResponseDto> getAllUsers() {
+        logger.info("Tüm kullanıcılar getiriliyor.");
         return userRepository.findAll()
                 .stream()
                 .map(UserMapper::toDto)
