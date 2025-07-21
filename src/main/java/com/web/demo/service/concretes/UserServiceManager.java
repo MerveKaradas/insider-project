@@ -92,4 +92,15 @@ public class UserServiceManager implements  UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
         userRepository.delete(user);
     }
+
+    public User login(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
+
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+            throw new IllegalArgumentException("Parola yanlış.");
+        }
+
+        return user;
+    }
 }
