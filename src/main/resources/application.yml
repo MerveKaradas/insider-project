@@ -15,3 +15,10 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+
+# Log ayarları
+logging:
+  level:
+    root: WARN # default WARN
+    com.web.demo: INFO # Sadece kendi package
+
