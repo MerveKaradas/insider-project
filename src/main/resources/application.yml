@@ -1,6 +1,5 @@
-#Ortak genel ayarlar
 # Bu dosya, uygulamanın genel yapılandırma ayarlarını içerir.
-# Ortam bağımsız ayarlar burada tanımlanır.
+# Ortam bağımsız ayarlar 
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/walletdb # Veritabanı URL'si
