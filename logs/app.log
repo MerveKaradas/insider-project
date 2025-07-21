@@ -1,0 +1,5 @@
+2025-07-21 13:55:40 INFO  com.web.demo.DemoApplication - Starting DemoApplication using Java 17.0.11 with PID 8136 (C:\Users\merve\OneDrive\Masaüstü\insider\target\classes started by merve in C:\Users\merve\OneDrive\Masaüstü\insider)
+2025-07-21 13:55:40 INFO  com.web.demo.DemoApplication - No active profile set, falling back to 1 default profile: "default"
+2025-07-21 13:55:48 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-21 13:55:49 INFO  com.web.demo.DemoApplication - Started DemoApplication in 10.261 seconds (process running for 11.005)
+2025-07-21 13:55:58 INFO  c.w.d.s.concretes.UserServiceManager - Tüm kullanýcýlar getiriliyor.
