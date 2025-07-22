@@ -1,10 +1,5 @@
 package com.web.demo.config;
-
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import org.springframework.stereotype.Component;
 import io.micrometer.tracing.Tracer;
@@ -25,10 +20,13 @@ public class TracingFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         try {
-            TracingMDCConfig.updateMDC(tracer);
+            if (tracer != null && tracer.currentSpan() != null) {
+                var context = tracer.currentSpan().context();
+                MDC.put("traceId", context.traceId());
+                MDC.put("spanId", context.spanId());
+            }
             chain.doFilter(request, response);
         } finally {
-            // Temizle
             MDC.clear();
         }
     }
