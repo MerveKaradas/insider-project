@@ -21,6 +21,7 @@ import com.web.demo.dto.Response.UserResponseDto;
 import com.web.demo.model.User;
 import com.web.demo.security.JwtUtil;
 import com.web.demo.service.abstracts.UserService;
+import org.springframework.cache.annotation.Cacheable;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -35,6 +36,7 @@ public class UserManagementController {
         this.jwtUtil = jwtUtil;
     }
     
+ 
     @GetMapping("/")
    // @PreAuthorize("hasRole('ADMIN')") // sadece admin erişimi
     public ResponseEntity<List<UserResponseDto>> getAllUsers() {

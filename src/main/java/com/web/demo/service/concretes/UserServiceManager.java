@@ -13,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.web.demo.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,7 @@ public class UserServiceManager implements  UserService {
         return UserMapper.toDto(user);
     }
 
+    @Cacheable(value = "users")
     public List<UserResponseDto> getAllUsers() {
         logger.info("Tüm kullanıcılar getiriliyor.");
         return userRepository.findAll()
@@ -108,5 +110,10 @@ public class UserServiceManager implements  UserService {
         }
 
         return user;
+    }
+
+    @CacheEvict(value = "users", allEntries = true) // Silme işlemlerinde cache temizleme
+    public void clearCache() {
+        System.out.println("Cache temizlendi.");
     }
 }
