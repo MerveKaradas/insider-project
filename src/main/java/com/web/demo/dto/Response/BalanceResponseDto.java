@@ -1,19 +1,20 @@
 package com.web.demo.dto.Response;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
 
 public class BalanceResponseDto {
 
     private Long balanceId;
     private Long userId;
-    private Double amount;
+    private BigDecimal amount;
     private LocalDateTime lastUpdatedAt;
 
     public BalanceResponseDto() {
     }
 
-    public BalanceResponseDto(Long balanceId, Long userId, Double amount, LocalDateTime lastUpdatedAt) {
+    public BalanceResponseDto(Long balanceId, Long userId, BigDecimal amount, LocalDateTime lastUpdatedAt) {
         this.balanceId = balanceId;
         this.userId = userId;
         this.amount = amount;
@@ -36,11 +37,11 @@ public class BalanceResponseDto {
         this.userId = userId;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

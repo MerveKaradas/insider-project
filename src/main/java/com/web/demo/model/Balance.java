@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Table;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.ManyToOne;
@@ -11,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,12 +24,12 @@ public class Balance {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long balancesId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User balancesUserId;
 
     @Column(name = "balances_amount", nullable = false)
-    private Double balancesAmount;
+    private BigDecimal balancesAmount;
 
 
     @UpdateTimestamp
@@ -37,7 +39,7 @@ public class Balance {
     public Balance() {
     }
 
-    public Balance(User balancesUserId, Double balancesAmount) {
+    public Balance(User balancesUserId, BigDecimal balancesAmount) {
         this.balancesUserId = balancesUserId;
         this.balancesAmount = balancesAmount;
     }
@@ -58,11 +60,11 @@ public class Balance {
         this.balancesUserId = balancesUserId;
     }
 
-    public Double getBalancesAmount() {
+    public BigDecimal getBalancesAmount() {
         return balancesAmount;
     }
 
-    public void setBalancesAmount(Double balancesAmount) {
+    public void setBalancesAmount(BigDecimal balancesAmount) {
         this.balancesAmount = balancesAmount;
     }
 

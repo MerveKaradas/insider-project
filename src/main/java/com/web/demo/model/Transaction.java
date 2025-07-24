@@ -12,11 +12,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Table;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import java.math.BigDecimal;
+
 
  @Entity
  @EntityListeners(AuditingEntityListener.class) //entity nesnelerinde otomatik olarak tarih/saat gibi izleme alanlarını doldurmak için kullanılan dinleyicidir.JPA tarafından sağlanır.
@@ -28,21 +31,20 @@ public class Transaction {
     @Column(name = "transactions_id", nullable = false, updatable = false)
     private Long transactionsId;
 
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // FetchType.LAZY, ilişkili verilerin yalnızca ihtiyaç duyulduğunda yüklenmesini sağlar.
     @JoinColumn(name = "from_user_id", nullable = false)
-    private User from_userId;
+    private User fromUserId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_user_id", nullable = false)
-    private User to_userId;
+    private User toUserId;
 
-    @Column(name = "transactions_amount", nullable = false)
-    private Double transactions_amount;
+    @Column(name = "transaction_amount", nullable = false)
+    private BigDecimal transactionAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TransactionsType type;
+    private TransactionType type;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -57,10 +59,10 @@ public class Transaction {
     }
 
  
-    public Transaction(User from_userId, User to_userId, Double transactions_amount, TransactionsType type, TransactionStatus status) {
-        this.from_userId = from_userId;
-        this.to_userId = to_userId;
-        this.transactions_amount = transactions_amount;
+    public Transaction(User fromUserId, User to_userId, BigDecimal transactions_amount, TransactionType type, TransactionStatus status) {
+        this.fromUserId = fromUserId;
+        this.toUserId = to_userId;
+        this.transactionAmount = transactions_amount;
         this.type = type;
         this.status = status;
     }
@@ -76,42 +78,41 @@ public class Transaction {
     }
 
 
-    public User getFrom_userId() {
-        return from_userId;
+    public User getFromUserId() {
+        return fromUserId;
     }
 
 
-    public void setFrom_userId(User from_userId) {
-        this.from_userId = from_userId;
+    public void setFromUserId(User from_userId) {
+        this.fromUserId = from_userId;
     }
 
 
-    public User getTo_userId() {
-        return to_userId;
+    public User getToUserId() {
+        return toUserId;
     }
 
 
-    public void setTo_userId(User to_userId) {
-        this.to_userId = to_userId;
+    public void setToUserId(User to_userId) {
+        this.toUserId = to_userId;
     }
 
 
-    public Double getTransactions_amount() {
-        return transactions_amount;
+    public BigDecimal getTransactionAmount() {
+        return transactionAmount;
+    }
+
+    public void setTransactionAmount(BigDecimal transactions_amount) {
+        this.transactionAmount = transactions_amount;
     }
 
 
-    public void setTransactions_amount(Double transactions_amount) {
-        this.transactions_amount = transactions_amount;
-    }
-
-
-    public TransactionsType getType() {
+    public TransactionType getType() {
         return type;
     }
 
 
-    public void setType(TransactionsType type) {
+    public void setType(TransactionType type) {
         this.type = type;
     }
 
