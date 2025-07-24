@@ -3,9 +3,6 @@ package com.web.demo.event;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import com.web.demo.util.GlobalContext;
-import com.web.demo.model.AuditLog;
-import com.web.demo.event.AuditEvent;
-import com.web.demo.util.GlobalContext;
 
 @Component
 public class AuditEventPublisher {

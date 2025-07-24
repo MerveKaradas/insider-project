@@ -18,10 +18,11 @@ import com.web.demo.dto.Request.LoginRequestDto;
 import com.web.demo.dto.Request.UserRequestDto;
 
 import com.web.demo.dto.Response.UserResponseDto;
+import com.web.demo.event.AuditEventPublisher;
 import com.web.demo.model.User;
 import com.web.demo.security.JwtUtil;
 import com.web.demo.service.abstracts.UserService;
-import org.springframework.cache.annotation.Cacheable;
+
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -29,11 +30,13 @@ public class UserManagementController {
 
      private final UserService userService;
      private final JwtUtil jwtUtil;
+     private final AuditEventPublisher auditPublisher;
 
     // Constructor Injection
-    public UserManagementController(UserService userService, JwtUtil jwtUtil) {
+    public UserManagementController(UserService userService, JwtUtil jwtUtil, AuditEventPublisher auditPublisher) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
+        this.auditPublisher = auditPublisher;
     }
     
  
@@ -66,7 +69,22 @@ public class UserManagementController {
     public ResponseEntity<?> login(@RequestBody LoginRequestDto request) {
         User user = userService.login(request.getEmail(), request.getPassword());
         String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
+
         return ResponseEntity.ok(Collections.singletonMap("token", token));
     }
+
+
+    @PostMapping("/register")
+    public ResponseEntity<UserResponseDto> register(@RequestBody UserRequestDto requestDto) {
+        UserResponseDto responseDto = userService.register(requestDto);
+        
+        // Audit log publishing
+        auditPublisher.publish("User", responseDto.getId(), "REGISTER", "User registered successfully",
+                responseDto.getEmail(), null, null);
+        
+        return ResponseEntity.ok(responseDto);
+    }
+
+
 
 }

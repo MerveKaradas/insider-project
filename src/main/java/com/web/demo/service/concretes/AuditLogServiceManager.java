@@ -11,6 +11,7 @@ import com.web.demo.model.AuditLog;
 @Service
 public class AuditLogServiceManager implements AuditLogService {
 
+    
    private final AuditLogRepository auditLogRepository;
 
     public AuditLogServiceManager(AuditLogRepository auditLogRepository) {

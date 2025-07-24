@@ -23,12 +23,14 @@ public class UserServiceManager implements  UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+   
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceManager.class);
 
     public UserServiceManager(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+      
     }
 
     @Override
@@ -51,6 +53,14 @@ public class UserServiceManager implements  UserService {
         // Veritabanına kaydet
         userRepository.save(user);
         logger.info("Yeni kullanıcı kaydedildi: {}", user.getEmail());
+
+        // // Audit loglama
+        // auditPublisher.publish("User", user.getId(), "CREATE", 
+        //     "Kullanıcı oluşturuldu: " + user.getEmail(),
+        //     GlobalContext.getCurrentUsername(),
+        //     GlobalContext.getIpAddress(),
+        //     GlobalContext.getUserAgent());
+        
 
         // Entity'den Response DTO 
         return UserMapper.toDto(user);
