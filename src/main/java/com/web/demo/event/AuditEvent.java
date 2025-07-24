@@ -2,9 +2,6 @@ package com.web.demo.event;
 
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.CreationTimestamp;
-
-import jakarta.persistence.Column;
 
 /*
  * KATMAN                GÖREV

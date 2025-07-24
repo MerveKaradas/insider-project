@@ -21,7 +21,7 @@ import jakarta.persistence.JoinColumn;
  @Entity
  @EntityListeners(AuditingEntityListener.class) //entity nesnelerinde otomatik olarak tarih/saat gibi izleme alanlarını doldurmak için kullanılan dinleyicidir.JPA tarafından sağlanır.
  @Table(name = "transactions")
-public class Transactions {
+public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,11 +53,11 @@ public class Transactions {
     private LocalDateTime transactionsCreatedAt;
 
 
-    public Transactions() {
+    public Transaction() {
     }
 
  
-    public Transactions(User from_userId, User to_userId, Double transactions_amount, TransactionsType type, TransactionStatus status) {
+    public Transaction(User from_userId, User to_userId, Double transactions_amount, TransactionsType type, TransactionStatus status) {
         this.from_userId = from_userId;
         this.to_userId = to_userId;
         this.transactions_amount = transactions_amount;

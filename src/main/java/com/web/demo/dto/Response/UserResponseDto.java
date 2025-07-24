@@ -14,6 +14,8 @@ public class UserResponseDto {
     private LocalDateTime updatedAt;
 
 
+    public UserResponseDto() {
+    }
 
     public UserResponseDto(Long id,String username, String email, Role role, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -50,6 +52,32 @@ public class UserResponseDto {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    
 
 
 

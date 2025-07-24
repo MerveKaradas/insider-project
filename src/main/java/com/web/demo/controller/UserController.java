@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,14 +25,14 @@ import com.web.demo.service.abstracts.UserService;
 
 @RestController
 @RequestMapping("/api/v1/users")
-public class UserManagementController {
+public class UserController {
 
      private final UserService userService;
      private final JwtUtil jwtUtil;
      private final AuditEventPublisher auditPublisher;
 
     // Constructor Injection
-    public UserManagementController(UserService userService, JwtUtil jwtUtil, AuditEventPublisher auditPublisher) {
+    public UserController(UserService userService, JwtUtil jwtUtil, AuditEventPublisher auditPublisher) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.auditPublisher = auditPublisher;
