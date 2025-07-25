@@ -1,11 +1,12 @@
 package com.web.demo.model;
 
 public enum TransactionType {
-    TRANSFER, // para transferi
-    CREDIT, // kredi işlemi
     DEBIT, // borç işlemi
-    WITHDRAWAL, // para çekme
-    DEPOSIT, // para yatırma
     REFUND, // iade
-    PAYMENT // ödeme
+    PAYMENT, // ödeme
+    TRANSFER,      // Kullanıcıdan kullanıcıya para transferi
+    DEPOSIT,       // Sistemden kullanıcıya (para yatırma)
+    WITHDRAWAL,    // Kullanıcıdan sisteme (para çekme)
+    CREDIT,        // Sistemden kullanıcıya borç/kredi
+    DEBT_PAYMENT   // Kullanıcıdan sisteme kredi geri ödemesi
 }

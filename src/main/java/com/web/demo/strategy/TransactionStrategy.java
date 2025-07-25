@@ -1,7 +1,8 @@
 package com.web.demo.strategy;
 
 import com.web.demo.dto.Request.TransactionRequestDto;
+import com.web.demo.model.Transaction;
 
 public interface TransactionStrategy {
-    void processTransaction(TransactionRequestDto request);
+    Transaction processTransaction(TransactionRequestDto request);
 }

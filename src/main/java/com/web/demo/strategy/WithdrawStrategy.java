@@ -2,12 +2,13 @@ package com.web.demo.strategy;
 
 import org.springframework.stereotype.Service;
 import com.web.demo.dto.Request.TransactionRequestDto;
+import com.web.demo.model.Transaction;
 
 @Service("WITHDRAW") //para çekme
 public class WithdrawStrategy implements TransactionStrategy {
 
     @Override
-    public void processTransaction(TransactionRequestDto request) {
+    public Transaction processTransaction(TransactionRequestDto request) {
         // Bakiye kontrol yap -> Çekilecek tutarı bakiyeden çıkar -> Veritabanına kaydet yoksa hata ver
         // Kullanıcı bakiye al -> Amount çıkar -> Veritabanına kaydet
         // Eğer bakiye yetersizse hata fırlat

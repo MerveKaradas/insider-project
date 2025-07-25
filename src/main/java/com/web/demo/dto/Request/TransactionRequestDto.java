@@ -3,6 +3,7 @@ package com.web.demo.dto.Request;
 import java.math.BigDecimal;
 
 import com.web.demo.model.TransactionType;
+import com.web.demo.model.TransactionStatus;
 
 public class TransactionRequestDto {
 
@@ -10,6 +11,7 @@ public class TransactionRequestDto {
     private Long toUserId;
     private BigDecimal transactionAmount;
     private TransactionType transactionType;
+   
 
     public TransactionRequestDto() {
     }
@@ -19,6 +21,7 @@ public class TransactionRequestDto {
         this.toUserId = toUserId;
         this.transactionAmount = transactionAmount;
         this.transactionType = transactionType;
+       
     }
     
 
@@ -53,5 +56,6 @@ public class TransactionRequestDto {
     public void setTransactionType(TransactionType transactionType) {
         this.transactionType = transactionType;
     }
+
     
 }

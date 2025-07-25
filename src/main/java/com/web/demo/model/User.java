@@ -112,5 +112,10 @@ public class User {
         this.role = role;
     }
 
+    public void orElseGet(Object object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'orElseGet'");
+    }
+
     
 }

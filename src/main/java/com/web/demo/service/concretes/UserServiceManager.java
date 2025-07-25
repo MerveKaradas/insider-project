@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -125,5 +126,13 @@ public class UserServiceManager implements  UserService {
     @CacheEvict(value = "users", allEntries = true) // Silme işlemlerinde cache temizleme
     public void clearCache() {
         System.out.println("Cache temizlendi.");
+    }
+
+    @Override
+    public User findById(Long fromUserId) {
+      
+        return userRepository.findById(fromUserId).orElseThrow(
+            () -> new IllegalArgumentException("Kullanici bulunamadi")
+        );
     }
 }

@@ -13,7 +13,11 @@ public interface BalanceRepository extends JpaRepository<Balance, Long> {
 
     void updateBalance(Long toUserId, BigDecimal newBalance);
 
-    Optional<User> findByIdUser(Long toUserId);
+    //Optional<User> findByUserId(Long toUserId);
+
+    Optional<Balance> findBalanceByUserId(Long userId);
+
+    void save(BigDecimal newBalance);
 
    
     
