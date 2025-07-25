@@ -1,53 +1,109 @@
 package com.web.demo.strategy;
 
+import java.math.BigDecimal;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.web.demo.dto.Request.TransactionRequestDto;
+import com.web.demo.model.Balance;
 import com.web.demo.model.Transaction;
+import com.web.demo.model.TransactionStatus;
+import com.web.demo.model.TransactionType;
+import com.web.demo.model.User;
+import com.web.demo.repository.abstracts.BalanceRepository;
+import com.web.demo.repository.abstracts.TransactionRepository;
+import com.web.demo.service.abstracts.UserService;
+import com.web.demo.service.validation.WithdrawValidationService;
 
 @Service("WITHDRAW") //para çekme
 public class WithdrawStrategy implements TransactionStrategy {
 
+    private final WithdrawValidationService validationService;
+    private final BalanceRepository balanceRepository;
+    private final TransactionRepository transactionRepository;
+    private final UserService userService;
+  
+
+    public WithdrawStrategy(WithdrawValidationService validationService, BalanceRepository balanceRepository,
+            TransactionRepository transactionRepository, UserService userService) {
+        this.validationService = validationService;
+        this.balanceRepository = balanceRepository;
+        this.transactionRepository = transactionRepository;
+        this.userService = userService;
+    }
+
+    @Transactional
     @Override
     public Transaction processTransaction(TransactionRequestDto request) {
-        // Bakiye kontrol yap -> Çekilecek tutarı bakiyeden çıkar -> Veritabanına kaydet yoksa hata ver
-        // Kullanıcı bakiye al -> Amount çıkar -> Veritabanına kaydet
-        // Eğer bakiye yetersizse hata fırlat
-        // Eğer bakiye yeterliyse, yeni bakiye hesapla ve veritabanına kaydet
-        // Örnek:
-        // BigDecimal currentBalance = userService.getBalance(request.getFromUserId());
-        // if (currentBalance.compareTo(request.getTransactionAmount()) < 0) {
-        //     throw new InsufficientBalanceException("Yetersiz bakiye");
-        // }
-        // BigDecimal newBalance = currentBalance.subtract(request.getTransactionAmount());
-        // userService.updateBalance(request.getFromUserId(), newBalance);
-        // Veritabanına kaydetme işlemi
-        // Transaction transaction = new Transaction(request.getFromUserId(), null, request.getTransactionAmount
-        // transaction.setTransactionType(TransactionType.WITHDRAW);
-        // transactionRepository.save(transaction);
-        // Bu kısımda, request nesnesinden gerekli bilgileri alarak
-        // işlemi gerçekleştirebilirsiniz.
-        // Örneğin, request.getFromUserId() ile kullanıcı ID'sini alabilir
-        // ve request.getTransactionAmount() ile çekilecek tutarı alabilirsiniz.
-        // Daha sonra, bu bilgileri kullanarak kullanıcı bakiyesini güncelleyebilir
-        // ve gerekli veritabanı işlemlerini gerçekleştirebilirsiniz.
-        // Bu işlem başarılı olursa, TransactionResponseDto oluşturabilir ve
-        // işlem durumunu ayarlayabilirsiniz.
-        // Örneğin:
+
+        // Kullanıcıyı bul
+        User user = userService.findById(request.getFromUserId()); 
+        User systemUser = userService.findByUsername("system");
+        
+         // Mevcut bakiyeyi al
+        Balance balance = validationService.validateAndGetUserBalance(
+            user.getId(), "Kullanıcı bakiyesi bulunamadı");
+    
+        try {
+            
+            validationService.validateWithdrawRequest(request);
+            validationService.validateSufficientBalance(balance, request.getTransactionAmount());
+
+            
+            // Yeni bakiyeyi hesapla
+            BigDecimal newBalance = balance.getBalancesAmount().subtract(request.getTransactionAmount());
+            balance.setBalancesAmount(newBalance);
+            balanceRepository.save(balance); 
+
+            // Transaction oluştur ve kaydet
+            Transaction transaction = new Transaction();
+            transaction.setFromUserId(user); 
+            transaction.setToUserId(systemUser);
+            transaction.setTransactionAmount(request.getTransactionAmount());
+            transaction.setType(TransactionType.WITHDRAWAL);
+            transaction.setStatus(TransactionStatus.SUCCESS);
+            
+            return transactionRepository.save(transaction); 
+
+        } catch(Exception e) {
+
+            Transaction failedTransaction = new Transaction();
+            failedTransaction.setFromUserId(user); 
+            failedTransaction.setToUserId(systemUser);
+            failedTransaction.setTransactionAmount(request.getTransactionAmount());
+            failedTransaction.setType(TransactionType.WITHDRAWAL);
+            failedTransaction.setStatus(TransactionStatus.FAILED);
+            transactionRepository.save(failedTransaction); 
+
+            // Sadece logla, IllegalArgumentException ise olduğu gibi at
+           if (e instanceof IllegalArgumentException) throw e;
+
+            e.printStackTrace(); // TODO : loglama yapılmalı burada
+            throw new RuntimeException("Para çekme işlemi sırasında beklenmedik bir hata oluştu");
+        }
 
 
-        // Eğer işlem başarılıysa, TransactionResponseDto oluştur ve döndür
-        // Eğer işlem başarısızsa, TransactionResponseDto oluştur ve FAILED durumunu ayarla
-        // Örnek:
-        // TransactionResponseDto response = new TransactionResponseDto();
-        // response.setTransactionStatus(TransactionStatus.COMPLETED);
-        // return response;
-        // Not: Bu kısımda veritabanı işlemleri ve hata yönetimi
-        // detaylandırılmalıdır.
-        // Bu örnek, gerçek uygulama gereksinimlerine göre genişletilmelir.
-        // Örneğin, bakiye kontrolü, hata fırlatma, veritabanı güncelleme gibi işlemler
-        // eklenmelidir.    
-        // Bu kısımda, request nesnesinden gerekli bilgileri alarak
-        // işlemi gerçekleştirebilirsiniz.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+        
+        
     }
     
 }

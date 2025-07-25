@@ -21,6 +21,7 @@ UserResponseDto register(UserRequestDto requestDto);
     User login(String email, String password);
     
     User findById(Long fromUserId);
+    User findByUsername(String username);
 
 
 

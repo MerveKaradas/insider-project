@@ -2,6 +2,8 @@ package com.web.demo.strategy;
 
 import com.web.demo.dto.Request.TransactionRequestDto;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.web.demo.repository.abstracts.BalanceRepository;
 import com.web.demo.service.abstracts.UserService;
 import com.web.demo.model.User;
@@ -31,6 +33,7 @@ public class DepositStrategy implements TransactionStrategy {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     @Override
     public Transaction processTransaction(TransactionRequestDto request) {
 

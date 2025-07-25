@@ -131,7 +131,15 @@ public class UserServiceManager implements  UserService {
     public User findById(Long fromUserId) {
       
         return userRepository.findById(fromUserId).orElseThrow(
-            () -> new IllegalArgumentException("Kullanici bulunamadi")
+            () -> new IllegalArgumentException(fromUserId + " Id'li kullanici bulunamadi")
+        );
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        
+        return userRepository.findByUsername(username).orElseThrow(
+            () -> new IllegalArgumentException(username + " kullanicisi bulunamadi")
         );
     }
 }
