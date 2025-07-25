@@ -35,11 +35,11 @@ public class WithdrawStrategy implements TransactionStrategy {
     @Override
     public Transaction processTransaction(TransactionRequestDto request) {
 
-        // Kullanıcıyı bul
+        // Kullanıcı bulma
         User user = userService.findById(request.getFromUserId()); 
         User systemUser = userService.findByUsername("system");
         
-         // Mevcut bakiyeyi al
+         // Mevcut bakiyeyi alma
         Balance balance = validationService.validateAndGetUserBalance(
             user.getId(), "Kullanıcı bakiyesi bulunamadı");
     
@@ -49,12 +49,12 @@ public class WithdrawStrategy implements TransactionStrategy {
             validationService.validateSufficientBalance(balance, request.getTransactionAmount());
 
             
-            // Yeni bakiyeyi hesapla
+            // Yeni bakiye hesaplama
             BigDecimal newBalance = balance.getBalancesAmount().subtract(request.getTransactionAmount());
             balance.setBalancesAmount(newBalance);
             balanceRepository.save(balance); 
 
-            // Transaction oluştur ve kaydet
+            // Transaction oluşturma (Başarılı)
             Transaction transaction = new Transaction();
             transaction.setFromUserId(user); 
             transaction.setToUserId(systemUser);
@@ -66,6 +66,7 @@ public class WithdrawStrategy implements TransactionStrategy {
 
         } catch(Exception e) {
 
+            // Başarısız işlem
             Transaction failedTransaction = new Transaction();
             failedTransaction.setFromUserId(user); 
             failedTransaction.setToUserId(systemUser);
@@ -74,10 +75,10 @@ public class WithdrawStrategy implements TransactionStrategy {
             failedTransaction.setStatus(TransactionStatus.FAILED);
             transactionRepository.save(failedTransaction); 
 
-            // Sadece logla, IllegalArgumentException ise olduğu gibi at
+            
            if (e instanceof IllegalArgumentException) throw e;
 
-            e.printStackTrace(); // TODO : loglama yapılmalı burada
+            e.printStackTrace(); // TODO : loglama 
             throw new RuntimeException("Para çekme işlemi sırasında beklenmedik bir hata oluştu");
         }
 
