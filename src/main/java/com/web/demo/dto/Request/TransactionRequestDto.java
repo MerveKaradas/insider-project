@@ -1,9 +1,8 @@
 package com.web.demo.dto.Request;
 
 import java.math.BigDecimal;
-
 import com.web.demo.model.TransactionType;
-import com.web.demo.model.TransactionStatus;
+
 
 public class TransactionRequestDto {
 

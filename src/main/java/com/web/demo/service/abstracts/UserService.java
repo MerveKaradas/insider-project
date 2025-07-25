@@ -5,7 +5,6 @@ import com.web.demo.dto.Response.UserResponseDto;
 import com.web.demo.model.User;
 
 import java.util.List;
-import java.util.Optional;
 
 
 public interface UserService {
