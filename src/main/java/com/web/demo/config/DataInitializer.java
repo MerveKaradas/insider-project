@@ -28,7 +28,7 @@ public class DataInitializer implements ApplicationRunner {
 
             //yoksa olusturulur
             User systemUser = new User();
-            systemUser.setId(-1L);
+           
             systemUser.setEmail("system@gmail.com"); // login olamayacak ama nullable=false old. icin ekledik
             systemUser.setUsername(systemUsername);
             systemUser.setRole(Role.ROLE_SYSTEM);

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-@Component
+@Component("customRequestContextFilter")
 public class RequestContextFilter extends OncePerRequestFilter {
 
     @Override

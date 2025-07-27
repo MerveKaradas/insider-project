@@ -32,6 +32,11 @@ public class TransferStrategy implements TransactionStrategy {
         this.validationService = validationService ;
     }
 
+    @Override
+    public TransactionType getType() {
+        return TransactionType.TRANSFER;
+    }
+
     @Transactional
     @Override
     public Transaction processTransaction(TransactionRequestDto request) {

@@ -33,6 +33,11 @@ public class DepositStrategy implements TransactionStrategy {
         this.validationService = validationService;
     }
 
+    @Override
+    public TransactionType getType() {
+        return TransactionType.DEPOSIT;
+    }
+
     @Transactional
     @Override
     public Transaction processTransaction(TransactionRequestDto request) {
@@ -81,6 +86,7 @@ public class DepositStrategy implements TransactionStrategy {
             
         }
  
+        
             
 
         

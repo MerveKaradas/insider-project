@@ -3,7 +3,6 @@ package com.web.demo.service.concretes;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
 import org.springframework.stereotype.Service;
 import com.web.demo.service.abstracts.BalanceService;
 import com.web.demo.repository.abstracts.BalanceRepository;
@@ -43,14 +42,17 @@ public class BalanceServiceManager implements BalanceService {
 
         LocalDateTime pointer = start;
         while (pointer.isBefore(end)) {
-            Double totalIn = transactionRepository.sumToUserUntil(userId, pointer);
-            Double totalOut = transactionRepository.sumFromUserUntil(userId, pointer);
+            BigDecimal totalIn = transactionRepository.sumToUserUntil(userId, pointer);
+            BigDecimal totalOut = transactionRepository.sumFromUserUntil(userId, pointer);
 
-            Double result = (totalIn != null ? totalIn : 0.0) - (totalOut != null ? totalOut : 0.0);
+            totalIn = (totalIn != null) ? totalIn : BigDecimal.ZERO;
+            totalOut = (totalOut != null) ? totalOut : BigDecimal.ZERO;
+
+            BigDecimal result = totalIn.subtract(totalOut);
 
             HistoricalBalanceResponseDto.Snapshot snapshot = new HistoricalBalanceResponseDto.Snapshot();
             snapshot.setDate(pointer);
-            snapshot.setAmount(BigDecimal.valueOf(result));
+            snapshot.setAmount(result);
             snapshots.add(snapshot);
 
             pointer = pointer.plusDays(1); // veya saatlik: plusHours(1)
@@ -63,10 +65,13 @@ public class BalanceServiceManager implements BalanceService {
     
    @Override
    public BalanceAtTimeResponseDto balanceAtTime(Long userId, LocalDateTime atTime) {
-    Double totalIn = transactionRepository.sumToUserUntil(userId, atTime);
-    Double totalOut = transactionRepository.sumFromUserUntil(userId, atTime);
+    BigDecimal totalIn = transactionRepository.sumToUserUntil(userId, atTime);
+    BigDecimal totalOut = transactionRepository.sumFromUserUntil(userId, atTime);
 
-    Double result = (totalIn != null ? totalIn : 0.0) - (totalOut != null ? totalOut : 0.0);
+    totalIn = (totalIn != null) ? totalIn : BigDecimal.ZERO;
+    totalOut = (totalOut != null) ? totalOut : BigDecimal.ZERO;
+
+    BigDecimal result = totalIn.subtract(totalOut);
 
     return new BalanceAtTimeResponseDto(userId, result, atTime);
 }

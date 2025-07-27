@@ -31,6 +31,11 @@ public class WithdrawStrategy implements TransactionStrategy {
         this.userService = userService;
     }
 
+    @Override
+    public TransactionType getType() {
+        return TransactionType.WITHDRAWAL;
+    }
+
     @Transactional
     @Override
     public Transaction processTransaction(TransactionRequestDto request) {

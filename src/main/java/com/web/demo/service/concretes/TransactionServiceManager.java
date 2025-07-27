@@ -18,9 +18,9 @@ public class TransactionServiceManager implements TransactionService {
     private final Map<String, TransactionStrategy> strategyMap;
 
     public TransactionServiceManager(List<TransactionStrategy> strategies) {
-        this.strategyMap = strategies.stream()
+       this.strategyMap = strategies.stream()
             .collect(Collectors.toMap(
-                s -> s.getClass().getAnnotation(Service.class).value(),
+                s -> s.getType().name(), // enum döndürüyoruz
                 Function.identity()
             ));
     }
