@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BalanceRepository extends JpaRepository<Balance, Long> {
 
-    Optional<Balance> findBalanceByBalancesUserId_Id(Long userId);
+    Optional<Balance> findByBalancesUserId_Id(Long userId);
 
     void save(BigDecimal newBalance);
 

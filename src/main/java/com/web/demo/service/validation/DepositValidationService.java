@@ -17,7 +17,7 @@ public class DepositValidationService {
     }
 
      public Balance validateAndGetUserBalance(Long userId, String errorMessageIfNotFound) {
-        return balanceRepository.findBalanceByBalancesUserId_Id(userId)
+        return balanceRepository.findByBalancesUserId_Id(userId)
                 .orElseThrow(() -> new IllegalArgumentException(errorMessageIfNotFound));
     }
     
