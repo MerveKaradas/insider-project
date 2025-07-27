@@ -1,8 +1,12 @@
 package com.web.demo.dto.Request;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class HistoricalBalanceRequestDto {
+public class HistoricalBalanceRequestDto implements Serializable {
+
+    private static final long serialVersionUID = 1002L;
+
     private LocalDateTime start;
     private LocalDateTime end;
 

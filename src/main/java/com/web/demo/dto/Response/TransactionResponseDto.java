@@ -1,11 +1,14 @@
 package com.web.demo.dto.Response;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import com.web.demo.model.TransactionType;
 import com.web.demo.model.TransactionStatus;
 
-public class TransactionResponseDto {
+public class TransactionResponseDto implements Serializable {
+
+    private static final long serialVersionUID = 2004L;
 
     private Long transactionId;
     private Long fromUserId;

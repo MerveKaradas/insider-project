@@ -1,10 +1,13 @@
 package com.web.demo.dto.Response;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.web.demo.model.Role;
 
-public class UserResponseDto {
+public class UserResponseDto implements Serializable {
+
+    private static final long serialVersionUID = 2005L;
     
     private Long id;
     private String username;

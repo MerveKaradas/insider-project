@@ -1,12 +1,15 @@
 package com.web.demo.dto.Request;
 
+import java.io.Serializable;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public class UserRequestDto {
+public class UserRequestDto implements Serializable {
 
+    private static final long serialVersionUID = 1005L;
 
     @NotBlank(message = "Kullanıcı adı boş olamaz!")
     @Size(min = 3, max = 20, message = "Kullanıcı adı 3-20 karakter arasında olmalıdır!")

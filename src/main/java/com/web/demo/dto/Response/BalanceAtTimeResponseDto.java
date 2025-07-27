@@ -1,9 +1,13 @@
 package com.web.demo.dto.Response;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class BalanceAtTimeResponseDto {
+public class BalanceAtTimeResponseDto implements Serializable {
+
+    private static final long serialVersionUID = 2001L;
+    
     private Long userId;
     private BigDecimal amount;
     private LocalDateTime atTime;

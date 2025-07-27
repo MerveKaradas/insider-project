@@ -1,6 +1,11 @@
 package com.web.demo.dto.Request;
 
-public class LoginRequestDto {
+import java.io.Serializable;
+
+public class LoginRequestDto implements Serializable {
+
+    private static final long serialVersionUID = 1003L;
+
     private String email;
     private String password;
 

@@ -1,10 +1,13 @@
 package com.web.demo.dto.Request;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import com.web.demo.model.TransactionType;
 
 
-public class TransactionRequestDto {
+public class TransactionRequestDto implements Serializable{
+    
+    private static final long serialVersionUID = 1004L;
 
     private Long fromUserId;
     private Long toUserId;
