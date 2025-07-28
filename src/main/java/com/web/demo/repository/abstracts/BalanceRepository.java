@@ -1,6 +1,7 @@
 package com.web.demo.repository.abstracts;
 
 import com.web.demo.model.Balance;
+import com.web.demo.model.User;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -11,6 +12,8 @@ public interface BalanceRepository extends JpaRepository<Balance, Long> {
     Optional<Balance> findByBalancesUserId_Id(Long userId);
 
     void save(BigDecimal newBalance);
+
+    Optional<Balance> findByBalancesUserId(Long userId);
 
    
     

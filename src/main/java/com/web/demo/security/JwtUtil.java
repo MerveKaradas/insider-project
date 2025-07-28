@@ -17,9 +17,9 @@ public class JwtUtil  {
     private final long EXPIRATION_TIME = 86400000; // 1 gün;
 
     // JWT oluşturma 
-    public String generateToken(String username, String role) {
+    public String generateToken(String email, String role) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email) // jwt içerisinde email olacak
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
@@ -28,7 +28,7 @@ public class JwtUtil  {
     }
 
      // Token'dan kullanıcı adını alma
-    public String getUsernameFromToken(String token) {
+    public String getEmailFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()

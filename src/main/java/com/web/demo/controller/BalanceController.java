@@ -28,9 +28,10 @@ public class BalanceController {
     }
 
     @GetMapping("/current")
-    public ResponseEntity<BalanceResponseDto> getCurrentBalance(@AuthenticationPrincipal String username) {
-        return ResponseEntity.ok(balanceService.currentBalanceByUsername(username));
-    }   
+    public ResponseEntity<BalanceResponseDto> getCurrentBalance(@AuthenticationPrincipal String email) {
+        return ResponseEntity.ok(balanceService.currentBalanceByEmail(email));
+    }
+
 
    @GetMapping("/at-time")
     public ResponseEntity<BalanceAtTimeResponseDto> getBalanceAtTime(
