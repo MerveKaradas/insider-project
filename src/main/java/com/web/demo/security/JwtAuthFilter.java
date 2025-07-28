@@ -19,7 +19,12 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    
+    List<String> publicPaths = List.of(
+        "/api/v1/users/login",
+        "/api/v1/users/register"
+       
+    );
+
 
     public JwtAuthFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -29,6 +34,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
        
         String authHeader = request.getHeader("Authorization");
+
+        String path = request.getRequestURI();
+
+        if (publicPaths.contains(path)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
