@@ -18,7 +18,7 @@ UserResponseDto register(UserRequestDto requestDto);
 
     void deleteUser(Long id);
 
-    User login(String email, String password);
+    String login(String email, String password);
     
     User findById(Long fromUserId);
     User findByUsername(String username);

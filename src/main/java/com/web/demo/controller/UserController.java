@@ -3,6 +3,7 @@ package com.web.demo.controller;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,10 +67,12 @@ public class UserController {
     // Giriş yapan kullanıcıya token dönecek
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto request) {
-        User user = userService.login(request.getEmail(), request.getPassword());
-        String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
-
-        return ResponseEntity.ok(Collections.singletonMap("token", token));
+        try {
+            String token = userService.login(request.getEmail(), request.getPassword());
+            return ResponseEntity.ok(Collections.singletonMap("token", token));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
     }
 
 

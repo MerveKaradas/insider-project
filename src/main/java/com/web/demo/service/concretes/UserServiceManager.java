@@ -8,6 +8,7 @@ import com.web.demo.dto.Response.UserResponseDto;
 import com.web.demo.exception.UserAlreadyExistsException;
 import com.web.demo.mapper.UserMapper;
 import com.web.demo.repository.abstracts.UserRepository;
+import com.web.demo.security.JwtUtil;
 import com.web.demo.service.abstracts.UserService;
 import org.springframework.transaction.annotation.Transactional;
 import com.web.demo.model.User;
@@ -15,21 +16,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import java.lang.String;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.web.demo.exception.AuthenticationException;
 
 @Service
 public class UserServiceManager implements  UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
    
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceManager.class);
 
-    public UserServiceManager(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceManager(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
       
     }
 
@@ -111,16 +119,17 @@ public class UserServiceManager implements  UserService {
         userRepository.delete(user);
     }
 
-    public User login(String email, String password) {
+    public String login(String email, String rawPassword) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
+                .orElseThrow(() -> new AuthenticationException("Geçersiz kullanıcı adı veya şifre"));
 
-        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-            throw new IllegalArgumentException("Parola yanlış.");
+        if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
+            throw new AuthenticationException("Geçersiz kullanıcı adı veya şifre");
         }
 
-        return user;
+        return jwtUtil.generateToken(user.getUsername(), user.getRole().name());
     }
+
 
     @CacheEvict(value = "users", allEntries = true) // Silme işlemlerinde cache temizleme
     public void clearCache() {

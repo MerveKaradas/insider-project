@@ -13,7 +13,7 @@ import javax.crypto.SecretKey;
 @Component
 public class JwtUtil  {
 
-    private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256)
+    private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private final long EXPIRATION_TIME = 86400000; // 1 gün;
 
     // JWT oluşturma 
