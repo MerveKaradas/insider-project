@@ -28,18 +28,20 @@ public class BalanceController {
     }
 
     @GetMapping("/current")
-    public ResponseEntity<BalanceResponseDto> getCurrentBalance(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(balanceService.currentBalance(user.getId()));
+    public ResponseEntity<BalanceResponseDto> getCurrentBalance(@AuthenticationPrincipal String username) {
+        return ResponseEntity.ok(balanceService.currentBalanceByUsername(username));
     }   
 
-    @GetMapping("/at-time")
+   @GetMapping("/at-time")
     public ResponseEntity<BalanceAtTimeResponseDto> getBalanceAtTime(
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal String username,
             @RequestBody BalanceAtTimeRequestDto request) {
 
-        BalanceAtTimeResponseDto response = balanceService.balanceAtTime(user.getId(), request.getAtTime());
+        Long userId = balanceService.getUserIdByUsername(username);
+        BalanceAtTimeResponseDto response = balanceService.balanceAtTime(userId, request.getAtTime());
         return ResponseEntity.ok(response);
     }
+
 
     @PostMapping("/historical") // POST daha mantıklı çünkü body alıyoruz
     public ResponseEntity<HistoricalBalanceResponseDto> getHistoricalBalance(

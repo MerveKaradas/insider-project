@@ -3,6 +3,8 @@ package com.web.demo.service.concretes;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import com.web.demo.service.abstracts.BalanceService;
 import com.web.demo.repository.abstracts.BalanceRepository;
@@ -11,7 +13,10 @@ import com.web.demo.dto.Response.BalanceResponseDto;
 import com.web.demo.dto.Response.HistoricalBalanceResponseDto;
 import com.web.demo.mapper.BalanceMapper;
 import com.web.demo.model.Balance;
+import com.web.demo.model.User;
 import com.web.demo.repository.abstracts.TransactionRepository;
+import com.web.demo.repository.abstracts.UserRepository;
+
 import java.util.List;
 
 @Service
@@ -19,13 +24,38 @@ public class BalanceServiceManager implements BalanceService {
 
     private final BalanceRepository balanceRepository;
     private final TransactionRepository transactionRepository;
+    private final UserRepository userRepository;
 
 
-    public BalanceServiceManager(BalanceRepository balanceRepository, TransactionRepository transactionRepository) {
+    public BalanceServiceManager(BalanceRepository balanceRepository, TransactionRepository transactionRepository, UserRepository userRepository) {
         this.balanceRepository = balanceRepository;
         this.transactionRepository = transactionRepository;
+        this.userRepository = userRepository;
       
     }
+    public Long getUserIdByUsername(String username){
+        User user = userRepository.findByEmail(username)
+            .orElseThrow(() -> new UsernameNotFoundException("Kayıtlı kullanici bulunamadi"));
+
+        return user.getId();
+    }
+
+
+    public BalanceResponseDto currentBalanceByUsername(String username) {
+        User user = userRepository.findByEmail(username)
+            .orElseThrow(() -> new UsernameNotFoundException("Kayıtlı kullanici bulunamadi"));
+
+        Balance balance = balanceRepository.findByBalancesUserId_Id(user.getId())
+        .orElseThrow(() -> new RuntimeException("Kullanıcının cüzdanı bulunamadı"));
+
+        BalanceResponseDto dto = new BalanceResponseDto();
+        dto.setUserId(user.getId());
+        dto.setAmount(balance.getBalancesAmount());
+        dto.setLastUpdatedAt(balance.getBalancesLastUpdatedAt());
+
+        return dto;
+    }
+
 
     @Override
     public BalanceResponseDto currentBalance(Long userId) {

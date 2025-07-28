@@ -11,5 +11,6 @@ public interface BalanceService {
     BalanceResponseDto currentBalance(Long userId);
     BalanceAtTimeResponseDto balanceAtTime(Long userId, LocalDateTime atTime);
     HistoricalBalanceResponseDto historicalBalance(Long userId, LocalDateTime start, LocalDateTime end);
-    
+    BalanceResponseDto currentBalanceByUsername(String username);
+    Long getUserIdByUsername(String username);
 }
