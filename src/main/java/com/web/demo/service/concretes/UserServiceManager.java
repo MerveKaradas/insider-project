@@ -16,10 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import java.lang.String;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.web.demo.exception.AuthenticationException;
@@ -31,14 +28,12 @@ public class UserServiceManager implements  UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
    
-
     private static final Logger logger = LoggerFactory.getLogger(UserServiceManager.class);
 
     public UserServiceManager(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
-      
     }
 
     @Override
@@ -89,29 +84,40 @@ public class UserServiceManager implements  UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
     }
 
-    public UserResponseDto updateUser(Long id, UserRequestDto requestDto) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
 
-        // Email kontrolü
-        if (!user.getEmail().equals(requestDto.getEmail()) && userRepository.existsByEmail(requestDto.getEmail())) {
+    public UserResponseDto updateUser(Long id, UserRequestDto requestDto) {
+
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
+
+        if (!user.getEmail().equals(requestDto.getEmail()) &&
+            userRepository.existsByEmail(requestDto.getEmail())) {
             throw new UserAlreadyExistsException("Bu email zaten kullanılıyor.");
         }
 
-        // Parola güncelleme
+        if (!user.getUsername().equals(requestDto.getUsername()) &&
+            userRepository.existsByUsername(requestDto.getUsername())) {
+            throw new UserAlreadyExistsException("Bu kullanıcı adı zaten kullanılıyor.");
+        }
+
+        //Guncelleme islemi
+        if (requestDto.getUsername() != null && !requestDto.getUsername().isEmpty()) {
+            user.setUsername(requestDto.getUsername());
+        }
+
+        if (requestDto.getEmail() != null && !requestDto.getEmail().isEmpty()) {
+            user.setEmail(requestDto.getEmail());
+        }
+
         if (requestDto.getPassword() != null && !requestDto.getPassword().isEmpty()) {
             user.setPasswordHash(passwordEncoder.encode(requestDto.getPassword()));
         }
 
-        // DTO'dan Entity'ye güncelleme
-        UserMapper.toEntity(requestDto, user.getPasswordHash());
-
-       
-        userRepository.save(user);
-
-        // Güncellenmiş Entity'den Response DTO 
-        return UserMapper.toDto(user);
+        User updatedUser = userRepository.save(user);
+        return UserMapper.toDto(updatedUser);
+    
     }
+
 
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
