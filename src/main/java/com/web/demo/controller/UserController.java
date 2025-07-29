@@ -2,7 +2,6 @@ package com.web.demo.controller;
 
 import java.util.Collections;
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,14 +12,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.web.demo.dto.Request.LoginRequestDto;
 import com.web.demo.dto.Request.UserRequestDto;
-
 import com.web.demo.dto.Response.UserResponseDto;
 import com.web.demo.event.AuditEventPublisher;
-import com.web.demo.model.User;
-import com.web.demo.security.JwtUtil;
 import com.web.demo.service.abstracts.UserService;
 
 
@@ -29,13 +24,11 @@ import com.web.demo.service.abstracts.UserService;
 public class UserController {
 
      private final UserService userService;
-     private final JwtUtil jwtUtil;
      private final AuditEventPublisher auditPublisher;
 
     // Constructor Injection
-    public UserController(UserService userService, JwtUtil jwtUtil, AuditEventPublisher auditPublisher) {
+    public UserController(UserService userService, AuditEventPublisher auditPublisher) {
         this.userService = userService;
-        this.jwtUtil = jwtUtil;
         this.auditPublisher = auditPublisher;
     }
     

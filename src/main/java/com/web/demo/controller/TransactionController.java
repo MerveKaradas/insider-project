@@ -13,16 +13,6 @@ import com.web.demo.service.abstracts.TransactionService;
 @RequestMapping("/api/v1/transactions")
 public class TransactionController {
 
-    /*
-     * ○	POST /api/v1/transactions/credit
-        ○	POST /api/v1/transactions/debit
-        ○	POST /api/v1/transactions/transfer
-        ○	GET /api/v1/transactions/history
-        ○	GET /api/v1/transactions/{id}
-
-     * 
-     */
-
     private final TransactionService transactionService;
     
     public TransactionController(TransactionService transactionService) {

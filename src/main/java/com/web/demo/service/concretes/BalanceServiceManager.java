@@ -75,13 +75,17 @@ public class BalanceServiceManager implements BalanceService {
     }
 
     @Override
-    public HistoricalBalanceResponseDto historicalBalance(Long userId, LocalDateTime start, LocalDateTime end) {
-        List<HistoricalBalanceResponseDto.Snapshot> snapshots = new ArrayList<>();
+    public HistoricalBalanceResponseDto historicalBalance(String email, LocalDateTime start, LocalDateTime end) {
 
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("Kayıtlı kullanıcı bulunamadı"));
+
+        List<HistoricalBalanceResponseDto.Snapshot> snapshots = new ArrayList<>();
         LocalDateTime pointer = start;
+        
         while (pointer.isBefore(end)) {
-            BigDecimal totalIn = transactionRepository.sumToUserUntil(userId, pointer);
-            BigDecimal totalOut = transactionRepository.sumFromUserUntil(userId, pointer);
+            BigDecimal totalIn = transactionRepository.sumToUserUntil(user.getId(), pointer);
+            BigDecimal totalOut = transactionRepository.sumFromUserUntil(user.getId(), pointer);
 
             totalIn = (totalIn != null) ? totalIn : BigDecimal.ZERO;
             totalOut = (totalOut != null) ? totalOut : BigDecimal.ZERO;
@@ -102,16 +106,19 @@ public class BalanceServiceManager implements BalanceService {
     }
     
    @Override
-   public BalanceAtTimeResponseDto balanceAtTime(Long userId, LocalDateTime atTime) {
-    BigDecimal totalIn = transactionRepository.sumToUserUntil(userId, atTime);
-    BigDecimal totalOut = transactionRepository.sumFromUserUntil(userId, atTime);
+   public BalanceAtTimeResponseDto balanceAtTime(String email, LocalDateTime atTime) {
+
+    User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Kullanici bulunamdi"));
+
+    BigDecimal totalIn = transactionRepository.sumToUserUntil(user.getId(), atTime);
+    BigDecimal totalOut = transactionRepository.sumFromUserUntil(user.getId(), atTime);
 
     totalIn = (totalIn != null) ? totalIn : BigDecimal.ZERO;
     totalOut = (totalOut != null) ? totalOut : BigDecimal.ZERO;
 
     BigDecimal result = totalIn.subtract(totalOut);
 
-    return new BalanceAtTimeResponseDto(userId, result, atTime);
+    return new BalanceAtTimeResponseDto(user.getId(), result, atTime);
 }
 
 
