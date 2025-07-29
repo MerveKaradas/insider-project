@@ -16,7 +16,8 @@ public class BalanceMapper {
             balance.getBalancesId(),
             balance.getBalancesUserId().getId(),
             balance.getBalancesAmount(),
-            balance.getBalancesLastUpdatedAt()
+            balance.getBalancesLastUpdatedAt(),
+            balance.getBalancesCreatedAt()
         );
     }
 

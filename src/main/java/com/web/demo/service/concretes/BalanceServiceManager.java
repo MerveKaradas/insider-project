@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import com.web.demo.service.abstracts.BalanceService;
 import com.web.demo.repository.abstracts.BalanceRepository;
+import com.web.demo.dto.Request.BalanceRequestDto;
 import com.web.demo.dto.Response.BalanceAtTimeResponseDto;
 import com.web.demo.dto.Response.BalanceResponseDto;
 import com.web.demo.dto.Response.HistoricalBalanceResponseDto;
@@ -46,13 +47,13 @@ public class BalanceServiceManager implements BalanceService {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("Kayıtlı kullanıcı bulunamadı"));
 
-        Balance balance = balanceRepository.findByBalancesUserId(user.getId())
+        Balance balance = balanceRepository.findByBalancesUserId_Id(user.getId())
             .orElseThrow(() -> new RuntimeException("Kullanıcının cüzdanı bulunamadı"));
 
         BalanceResponseDto dto = new BalanceResponseDto();
         dto.setUserId(user.getId());
         dto.setAmount(balance.getBalancesAmount());
-        dto.setLastUpdatedAt(balance.getBalancesLastUpdatedAt());
+        dto.setBalancesLastUpdatedAt(balance.getBalancesLastUpdatedAt());
 
         return dto;
     }
@@ -67,7 +68,7 @@ public class BalanceServiceManager implements BalanceService {
         BalanceResponseDto dto = new BalanceResponseDto();
         dto.setUserId(user.getId());
         dto.setAmount(balance.getBalancesAmount());
-        dto.setLastUpdatedAt(balance.getBalancesLastUpdatedAt());
+        dto.setBalancesLastUpdatedAt(balance.getBalancesLastUpdatedAt());
 
         return dto;
     }
@@ -121,6 +122,42 @@ public class BalanceServiceManager implements BalanceService {
 
     return new BalanceAtTimeResponseDto(userId, result, atTime);
 }
+
+//    @Override
+//    public BalanceResponseDto createBalance(String email, BalanceRequestDto requestDto) {
+//         User user = userRepository.findByEmail(email)
+//             .orElseThrow(() -> new UsernameNotFoundException("Balance olusturmak icin kayıtlı kullanici bulunamadi"));
+
+//         BalanceResponseDto dto = new BalanceResponseDto();
+//         dto.setUserId(requestDto.getUserId());
+//         dto.setAmount(requestDto.getAmount());
+//         dto.setBalancesCreatedAt(LocalDateTime.now());
+//         dto.setBalancesLastUpdatedAt(LocalDateTime.now());
+//         balanceRepository.save(BalanceMapper.toEntity(dto, user));
+        
+//         System.out.println("Balance olustuuuldu. kullanici mail : " + user.getEmail() + dto.getUserId() + " " + dto.getAmount() + " " + dto.getBalancesCreatedAt() + " " + dto.getBalancesLastUpdatedAt() );
+//         return dto;
+//     }
+
+
+    @Override
+    public BalanceResponseDto createBalance(String email) {
+            User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Balance olusturmak icin kayıtlı kullanici bulunamadi"));
+
+            BalanceResponseDto dto = new BalanceResponseDto();
+            dto.setUserId(user.getId());
+            dto.setAmount(BigDecimal.ZERO);
+            dto.setBalancesCreatedAt(LocalDateTime.now());
+            dto.setBalancesLastUpdatedAt(LocalDateTime.now());
+            
+            balanceRepository.save(BalanceMapper.toEntity(dto, user));
+            
+            System.out.println("Balance olustuuuldu. kullanici mail : " + user.getEmail() + dto.getUserId() + " " + dto.getAmount() + " " + dto.getBalancesCreatedAt() + " " + dto.getBalancesLastUpdatedAt() );
+            return dto;
+        }
+
+
 
   
 }

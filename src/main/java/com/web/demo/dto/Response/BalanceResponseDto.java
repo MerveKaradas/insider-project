@@ -12,16 +12,23 @@ public class BalanceResponseDto implements Serializable {
     private Long balanceId;
     private Long userId;
     private BigDecimal amount;
-    private LocalDateTime lastUpdatedAt;
+    private LocalDateTime balancesLastUpdatedAt;
+    private LocalDateTime balancesCreatedAt;
 
     public BalanceResponseDto() {
     }
 
-    public BalanceResponseDto(Long balanceId, Long userId, BigDecimal amount, LocalDateTime lastUpdatedAt) {
+    public BalanceResponseDto(Long balanceId, Long userId, BigDecimal amount, LocalDateTime balancesLastUpdatedAt,
+            LocalDateTime balancesCreatedAt) {
         this.balanceId = balanceId;
         this.userId = userId;
         this.amount = amount;
-        this.lastUpdatedAt = lastUpdatedAt;
+        this.balancesLastUpdatedAt = balancesLastUpdatedAt;
+        this.balancesCreatedAt = balancesCreatedAt;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
     }
 
     public Long getBalanceId() {
@@ -48,13 +55,23 @@ public class BalanceResponseDto implements Serializable {
         this.amount = amount;
     }
 
-    public LocalDateTime getLastUpdatedAt() {
-        return lastUpdatedAt;
+    public LocalDateTime getBalancesLastUpdatedAt() {
+        return balancesLastUpdatedAt;
     }
 
-    public void setLastUpdatedAt(LocalDateTime lastUpdatedAt) {
-        this.lastUpdatedAt = lastUpdatedAt;
+    public void setBalancesLastUpdatedAt(LocalDateTime balancesLastUpdatedAt) {
+        this.balancesLastUpdatedAt = balancesLastUpdatedAt;
     }
+
+    public LocalDateTime getBalancesCreatedAt() {
+        return balancesCreatedAt;
+    }
+
+    public void setBalancesCreatedAt(LocalDateTime balancesCreatedAt) {
+        this.balancesCreatedAt = balancesCreatedAt;
+    }
+
+    
     
     
 }

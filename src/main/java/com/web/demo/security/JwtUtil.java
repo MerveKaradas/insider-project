@@ -1,6 +1,8 @@
 package com.web.demo.security;
 
 import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -13,8 +15,14 @@ import javax.crypto.SecretKey;
 @Component
 public class JwtUtil  {
 
-    private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final SecretKey key; // = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private final long EXPIRATION_TIME = 86400000; // 1 gün;
+
+     public JwtUtil() {
+        // Sabit bir Base64-encoded key (örneğin çevrimdışı ürettin)
+        String secret = "MySuperSecretKeyMySuperSecretKey123!"; // min. 256 bit
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
 
     // JWT oluşturma 
     public String generateToken(String email, String role) {

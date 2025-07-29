@@ -35,7 +35,7 @@ public class DataInitializer implements ApplicationRunner {
             
             String rawPassword = "sYsteM123!"; // login olmayacak ama model sınıfı hata donmemesi adina sifre belirlendi
             String encodedPassword = passwordEncoder.encode(rawPassword); 
-            systemUser.setPasswordHash(encodedPassword); //veritabanına hashlenerek eklenecek
+            systemUser.setPassword(encodedPassword); //veritabanına hashlenerek eklenecek
 
             return userRepository.save(systemUser);
 

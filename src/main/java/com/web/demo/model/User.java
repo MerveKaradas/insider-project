@@ -1,10 +1,15 @@
 package com.web.demo.model;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +26,7 @@ import jakarta.persistence.Table;
 @Entity
 @EntityListeners(AuditingEntityListener.class) //entity nesnelerinde otomatik olarak tarih/saat gibi izleme alanlarını doldurmak için kullanılan dinleyicidir.JPA tarafından sağlanır.
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -61,16 +66,47 @@ public class User {
         this.role = role;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+     @Override
+    public String getPassword() {
+        return this.password_hash;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email; // Email üzerinden giriş yapılacağı için burada email dönüyoruz
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
     }
 
     public void setUsername(String username) {
@@ -85,11 +121,7 @@ public class User {
         this.email = email;
     }
 
-    public String getPasswordHash() {
-        return password_hash;
-    }
-
-    public void setPasswordHash(String password_hash) {
+    public void setPassword(String password_hash) {
         this.password_hash = password_hash;
     }
 

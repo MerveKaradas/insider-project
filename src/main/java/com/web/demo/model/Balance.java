@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -16,7 +18,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "balances")
+@Table(name = "balances_new")
 @EntityListeners(AuditingEntityListener.class) //entity nesnelerinde otomatik olarak tarih/saat gibi izleme alanlarını doldurmak için kullanılan dinleyicidir.JPA tarafından sağlanır.
 public class Balance {
 
@@ -36,6 +38,10 @@ public class Balance {
     @Column(name = "balances_last_updated_at", nullable = false)
     private LocalDateTime balancesLastUpdatedAt;
 
+    @CreationTimestamp
+    @Column(name = "balances_created_at", updatable = false, nullable = false)
+    private LocalDateTime balancesCreatedAt;
+
     public Balance() {
     }
 
@@ -43,6 +49,7 @@ public class Balance {
         this.balancesUserId = balancesUserId;
         this.balancesAmount = balancesAmount;
     }
+
 
     public Long getBalancesId() {
         return balancesId;
@@ -74,6 +81,14 @@ public class Balance {
 
     public void setBalancesLastUpdatedAt(LocalDateTime balancesLastUpdatedAt) {
         this.balancesLastUpdatedAt = balancesLastUpdatedAt;
+    }
+
+    public LocalDateTime getBalancesCreatedAt() {
+        return balancesCreatedAt;
+    }
+
+    public void setBalancesCreatedAt(LocalDateTime balancesCreatedAt) {
+        this.balancesCreatedAt = balancesCreatedAt;
     }
 
     

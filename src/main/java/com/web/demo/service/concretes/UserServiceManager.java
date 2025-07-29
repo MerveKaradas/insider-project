@@ -110,7 +110,7 @@ public class UserServiceManager implements  UserService {
         }
 
         if (requestDto.getPassword() != null && !requestDto.getPassword().isEmpty()) {
-            user.setPasswordHash(passwordEncoder.encode(requestDto.getPassword()));
+            user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
         }
 
         User updatedUser = userRepository.save(user);
@@ -129,7 +129,7 @@ public class UserServiceManager implements  UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthenticationException("Geçersiz kullanıcı adı veya şifre"));
 
-        if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new AuthenticationException("Geçersiz kullanıcı adı veya şifre");
         }
 
