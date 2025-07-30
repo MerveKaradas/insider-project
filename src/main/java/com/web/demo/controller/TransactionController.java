@@ -1,13 +1,19 @@
 package com.web.demo.controller;
 
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.web.demo.service.abstracts.TransactionService;
-
+import com.web.demo.dto.Request.TransactionRequestDto;
+import com.web.demo.dto.Response.TransactionResponseDto;
+import com.web.demo.mapper.TransactionMapper;
+import com.web.demo.model.Transaction;
+import com.web.demo.model.User;
 
 @RestController
 @RequestMapping("/api/v1/transactions")
@@ -19,36 +25,76 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-     // Example endpoints for transaction operations
-
-
     @PostMapping("/credit")
-     public String creditTransaction() {
-         // Implement credit transaction logic here
-         return "Credit transaction endpoint";
-     } 
+    public ResponseEntity<TransactionResponseDto> creditTransaction(
+            @AuthenticationPrincipal User user,
+            @RequestBody TransactionRequestDto request) {
+
+        Transaction transaction = transactionService.executeTransaction(request, user.getEmail());
+
+        return ResponseEntity.ok(TransactionMapper.toDto(transaction));
+    } 
+
+    @PostMapping("/deposit")
+    public ResponseEntity<TransactionResponseDto> depositTransaction(
+            @AuthenticationPrincipal User user,
+            @RequestBody TransactionRequestDto request) {
+
+        Transaction transaction = transactionService.executeTransaction(request, user.getEmail());
+
+        return ResponseEntity.ok(TransactionMapper.toDto(transaction));
+    } 
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<TransactionResponseDto> withdrawTransaction(
+            @AuthenticationPrincipal User user,
+            @RequestBody TransactionRequestDto request) {
+
+        Transaction transaction = transactionService.executeTransaction(request, user.getEmail());
+
+        return ResponseEntity.ok(TransactionMapper.toDto(transaction));
+    } 
 
     @PostMapping("/debit")
-        public String debitTransaction() {
-            // Implement debit transaction logic here
-            return "Debit transaction endpoint"; 
-    }
-    
+    public ResponseEntity<TransactionResponseDto> debitTransaction(
+            @AuthenticationPrincipal User user,
+            @RequestBody TransactionRequestDto request) {
+
+        Transaction transaction = transactionService.executeTransaction(request, user.getEmail());
+
+        return ResponseEntity.ok(TransactionMapper.toDto(transaction));
+    } 
+
     @PostMapping("/transfer")
-    public String transferTransaction() {
-            // Implement transfer transaction logic here
-            return "Transfer transaction endpoint";    
-    }
+    public ResponseEntity<TransactionResponseDto> transferTransaction(
+            @AuthenticationPrincipal User user,
+            @RequestBody TransactionRequestDto request) {
+
+        Transaction transaction = transactionService.executeTransaction(request, user.getEmail());
+
+        return ResponseEntity.ok(TransactionMapper.toDto(transaction));
+    } 
+
 
     @GetMapping("/history")
-    public String transactionHistory() {
-        // Implement transaction history logic here
-        return "Transaction history endpoint";
-    }
+    public ResponseEntity<TransactionResponseDto> transactionHistory(
+            @AuthenticationPrincipal User user,
+            @RequestBody TransactionRequestDto request) {
 
+        Transaction transaction = transactionService.executeTransaction(request, user.getEmail());
+
+        return ResponseEntity.ok(TransactionMapper.toDto(transaction));
+    } 
+    
     @GetMapping("/{id}")
-    public String getTransactionById(@PathVariable Long id) {
-        // Implement logic to get transaction by ID here
-        return "Get transaction by ID endpoint";
-    }
+    public ResponseEntity<TransactionResponseDto> transactionById(
+            @AuthenticationPrincipal User user,
+            @RequestBody TransactionRequestDto request,
+            @PathVariable Long id) {
+
+        Transaction transaction = transactionService.executeTransaction(request, user.getEmail());
+
+        return ResponseEntity.ok(TransactionMapper.toDto(transaction));
+    } 
+
 }

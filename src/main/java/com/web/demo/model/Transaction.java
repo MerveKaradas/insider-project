@@ -58,7 +58,6 @@ public class Transaction {
     public Transaction() {
     }
 
- 
     public Transaction(User fromUserId, User to_userId, BigDecimal transactions_amount, TransactionType type, TransactionStatus status) {
         this.fromUserId = fromUserId;
         this.toUserId = to_userId;
@@ -66,9 +65,6 @@ public class Transaction {
         this.type = type;
         this.status = status;
     }
-
-
-
 
     public Long getTransactionsId() {
         return transactionsId;
