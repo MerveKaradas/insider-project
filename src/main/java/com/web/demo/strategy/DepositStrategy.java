@@ -3,7 +3,6 @@ package com.web.demo.strategy;
 import com.web.demo.dto.Request.TransactionRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.web.demo.repository.abstracts.BalanceRepository;
 import com.web.demo.service.abstracts.UserService;
 import com.web.demo.service.validation.DepositValidationService;
@@ -15,7 +14,7 @@ import com.web.demo.repository.abstracts.TransactionRepository;
 import com.web.demo.model.TransactionStatus; 
 import java.math.BigDecimal;
 
-@Service("DEPOSIT")
+@Service("DEPOSIT") //para yatırma
 public class DepositStrategy implements TransactionStrategy {
 
     private final BalanceRepository balanceRepository;
@@ -45,6 +44,8 @@ public class DepositStrategy implements TransactionStrategy {
         // Kullanıcı bulma
         User user = userService.findById(request.getFromUserId()); 
         User systemUser = userService.findByUsername("system");
+
+        System.out.println("Gelen kullanici id : " + user.getId() +  " " + user.getEmail() + "  balanceuserid : " + balanceRepository.findByBalancesUserId_Id(request.getFromUserId()));
         
          // Mevcut bakiyeyi alma
         Balance balance = validationService.validateAndGetUserBalance(
@@ -52,12 +53,10 @@ public class DepositStrategy implements TransactionStrategy {
 
         try {
 
-            // Yeni bakiyeyi hesapla
             BigDecimal newBalance = balance.getBalancesAmount().add(request.getTransactionAmount());
             balance.setBalancesAmount(newBalance);
             balanceRepository.save(balance); 
 
-            // Transaction oluştur ve kaydet
             Transaction transaction = new Transaction();
             transaction.setFromUserId(systemUser); 
             transaction.setToUserId(user);

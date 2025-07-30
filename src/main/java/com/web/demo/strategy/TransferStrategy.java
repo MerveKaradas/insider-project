@@ -45,7 +45,7 @@ public class TransferStrategy implements TransactionStrategy {
         User fromUser = userService.findById(request.getFromUserId());
         User toUser = userService.findById(request.getToUserId());
 
-        // Mevcut bakiyeyi al
+        // Mevcut bakiye
         Balance fromUserBalance = validationService.validateAndGetUserBalance(
             fromUser.getId(), "Gönderici kullanıcı bakiyesi bulunamadı");
         
@@ -59,7 +59,7 @@ public class TransferStrategy implements TransactionStrategy {
             validationService.validateSufficientBalance(fromUserBalance, request.getTransactionAmount());
 
             
-            // Yeni bakiyeyi hesapla
+            // Yeni bakiye hesabı
             BigDecimal newToUserBalance = toUserBalance.getBalancesAmount().add(request.getTransactionAmount());
             BigDecimal newFromUserBalance = fromUserBalance.getBalancesAmount().subtract(request.getTransactionAmount());
 
@@ -90,7 +90,6 @@ public class TransferStrategy implements TransactionStrategy {
             failedTransaction.setStatus(TransactionStatus.FAILED);
             transactionRepository.save(failedTransaction); 
 
-            // Sadece logla, IllegalArgumentException ise olduğu gibi at
            if (e instanceof IllegalArgumentException) throw e;
 
             e.printStackTrace(); // TODO : loglama yapılmalı burada
