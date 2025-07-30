@@ -1,10 +1,7 @@
 package com.web.demo.service.validation;
 
-
 import java.math.BigDecimal;
-
 import org.springframework.stereotype.Service;
-
 import com.web.demo.dto.Request.TransactionRequestDto;
 import com.web.demo.model.Balance;
 import com.web.demo.repository.abstracts.BalanceRepository;

@@ -3,9 +3,7 @@ package com.web.demo.service.abstracts;
 import com.web.demo.dto.Request.UserRequestDto;
 import com.web.demo.dto.Response.UserResponseDto;
 import com.web.demo.model.User;
-
 import java.util.List;
-
 
 public interface UserService {
 

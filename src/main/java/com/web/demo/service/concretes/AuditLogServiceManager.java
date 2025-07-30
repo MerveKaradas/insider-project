@@ -3,7 +3,6 @@ package com.web.demo.service.concretes;
 import com.web.demo.service.abstracts.AuditLogService;
 import com.web.demo.repository.abstracts.AuditLogRepository;
 import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.demo.model.AuditLog;

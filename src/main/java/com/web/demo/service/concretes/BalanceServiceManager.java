@@ -15,7 +15,6 @@ import com.web.demo.model.Balance;
 import com.web.demo.model.User;
 import com.web.demo.repository.abstracts.TransactionRepository;
 import com.web.demo.repository.abstracts.UserRepository;
-
 import java.util.List;
 
 @Service
