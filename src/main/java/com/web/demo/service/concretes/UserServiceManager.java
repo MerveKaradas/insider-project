@@ -119,6 +119,7 @@ public class UserServiceManager implements  UserService {
     }
 
 
+    
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));

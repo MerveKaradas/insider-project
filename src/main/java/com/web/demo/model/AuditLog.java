@@ -35,7 +35,6 @@ public class AuditLog {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-
     @Column(name = "performed_by")
     private String performedBy;
 

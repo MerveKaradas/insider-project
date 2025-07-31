@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,24 +78,26 @@ public class TransactionController {
 
 
     @GetMapping("/history")
-    public ResponseEntity<TransactionResponseDto> transactionHistory(
-            @AuthenticationPrincipal User user,
-            @RequestBody TransactionRequestDto request) {
+    public ResponseEntity<List<TransactionResponseDto>> transactionHistory(
+            @AuthenticationPrincipal User user) {
 
-        Transaction transaction = transactionService.executeTransaction(request, user.getEmail());
+        List<Transaction> transactions = transactionService.getHistory(user.getEmail());
+        List<TransactionResponseDto> dtoList = transactions.stream()
+            .map(TransactionMapper::toDto)
+            .toList();
 
-        return ResponseEntity.ok(TransactionMapper.toDto(transaction));
+        return ResponseEntity.ok(dtoList);
     } 
     
-    @GetMapping("/{id}")
-    public ResponseEntity<TransactionResponseDto> transactionById(
-            @AuthenticationPrincipal User user,
-            @RequestBody TransactionRequestDto request,
-            @PathVariable Long id) {
+ 
+    @GetMapping("history/{id}")
+    public ResponseEntity<TransactionResponseDto> getTransactionById(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id) {
 
-        Transaction transaction = transactionService.executeTransaction(request, user.getEmail());
-
+        Transaction transaction = transactionService.findByIdIfBelongsToUser(id, user); // Sadece o kullanıcıya aitse göster
         return ResponseEntity.ok(TransactionMapper.toDto(transaction));
-    } 
+    }
+
 
 }
