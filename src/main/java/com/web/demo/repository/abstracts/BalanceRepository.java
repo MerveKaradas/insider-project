@@ -1,8 +1,6 @@
 package com.web.demo.repository.abstracts;
 
 import com.web.demo.model.Balance;
-import com.web.demo.model.User;
-
 import java.math.BigDecimal;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

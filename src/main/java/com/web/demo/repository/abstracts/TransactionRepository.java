@@ -21,5 +21,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findAllByFromUserId_IdOrToUserId_IdOrderByTransactionsCreatedAtDesc(Long fromId, Long toId);
     //Kullanıcının gönderici ya da alıcı olduğu tüm işlemleri getirir.
 
+    @Query("SELECT t FROM Transaction t WHERE (t.fromUserId.id = :userId OR t.toUserId.id = :userId) AND t.transactionsCreatedAt BETWEEN :start AND :end ORDER BY t.transactionsCreatedAt ASC")
+        List<Transaction> findAllByUserIdAndCreatedAtBetween(
+        @Param("userId") Long userId,
+        @Param("start") LocalDateTime start,
+        @Param("end") LocalDateTime end
+    );
+
+
 }
 
