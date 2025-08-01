@@ -3,6 +3,7 @@ package com.web.demo.service.concretes;
 import com.web.demo.service.abstracts.AuditLogService;
 import com.web.demo.repository.abstracts.AuditLogRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.demo.model.AuditLog;
@@ -18,11 +19,11 @@ public class AuditLogServiceManager implements AuditLogService {
     }
 
 
-    
+    @Override
+    @Transactional
     public void saveAuditLog(String entityType, Long entityId, String action, String details, String performedBy, String ipAddress, String userAgent) {
-       
+        
         AuditLog auditLog = new AuditLog();
-
         auditLog.setEntityType(entityType);
         auditLog.setEntityId(entityId);
         auditLog.setAction(action);
@@ -30,10 +31,12 @@ public class AuditLogServiceManager implements AuditLogService {
         auditLog.setPerformedBy(performedBy);
         auditLog.setIpAddress(ipAddress);
         auditLog.setUserAgent(userAgent);
-        
+
         auditLogRepository.save(auditLog);
-        
+        System.out.println("Audit log kaydı transaction içinde sıraya eklendi. ID henüz atanmamış olabilir: " + auditLog.getAuditLogId());
+    
     }
+
     
     private String toJson(Object obj) {
         try {

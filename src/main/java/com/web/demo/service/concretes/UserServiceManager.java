@@ -2,18 +2,17 @@ package com.web.demo.service.concretes;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.web.demo.dto.Request.UserRequestDto;
 import com.web.demo.dto.Response.UserResponseDto;
+import com.web.demo.event.AuditEventPublisher;
 import com.web.demo.exception.UserAlreadyExistsException;
 import com.web.demo.mapper.UserMapper;
 import com.web.demo.repository.abstracts.UserRepository;
 import com.web.demo.security.JwtUtil;
 import com.web.demo.service.abstracts.UserService;
+import com.web.demo.util.GlobalContext;
 import org.springframework.transaction.annotation.Transactional;
 import com.web.demo.model.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import java.lang.String;
@@ -27,13 +26,13 @@ public class UserServiceManager implements  UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-   
-    private static final Logger logger = LoggerFactory.getLogger(UserServiceManager.class);
+    private final AuditEventPublisher auditEventPublisher;
 
-    public UserServiceManager(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public UserServiceManager(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil,AuditEventPublisher auditEventPublisher) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.auditEventPublisher = auditEventPublisher;
     }
 
     @Override
@@ -55,23 +54,27 @@ public class UserServiceManager implements  UserService {
 
         // Veritabanına kaydet
         userRepository.save(user);
-        logger.info("Yeni kullanıcı kaydedildi: {}", user.getEmail());
 
-        // // Audit loglama
-        // auditPublisher.publish("User", user.getId(), "CREATE", 
-        //     "Kullanıcı oluşturuldu: " + user.getEmail(),
-        //     GlobalContext.getCurrentUsername(),
-        //     GlobalContext.getIpAddress(),
-        //     GlobalContext.getUserAgent());
+        logger(user,"REGISTER","Kullanici kaydi olusturuldu");
         
-
         // Entity'den Response DTO 
         return UserMapper.toDto(user);
     }
 
+    public void logger(User user,String action, String details){
+        // Audit loglama
+        auditEventPublisher.publish(
+            "USER", 
+            user.getId(), 
+            action, 
+            details,
+            GlobalContext.getCurrentUsername(),
+            GlobalContext.getIpAddress(),
+            GlobalContext.getUserAgent());
+    }
+    
     @Cacheable(value = "users")
     public List<UserResponseDto> getAllUsers() {
-        logger.info("Tüm kullanıcılar getiriliyor.");
         return userRepository.findAll()
                 .stream()
                 .map(UserMapper::toDto)
@@ -85,6 +88,7 @@ public class UserServiceManager implements  UserService {
     }
 
 
+    @Transactional
     public UserResponseDto updateUser(Long id, UserRequestDto requestDto) {
 
         User user = userRepository.findById(id)
@@ -114,18 +118,26 @@ public class UserServiceManager implements  UserService {
         }
 
         User updatedUser = userRepository.save(user);
+
+        logger(user,"UPDATE","Kullanici kaydi guncellendi");
+
         return UserMapper.toDto(updatedUser);
     
     }
 
 
-    
+    @Transactional
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
+
+        logger(user,"DELETE","Kullanici kaydi silindi");
+
         userRepository.delete(user);
+
     }
 
+    @Transactional
     public String login(String email, String rawPassword) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthenticationException("Geçersiz kullanıcı adı veya şifre"));
@@ -133,6 +145,8 @@ public class UserServiceManager implements  UserService {
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new AuthenticationException("Geçersiz kullanıcı adı veya şifre");
         }
+
+        logger(user,"LOGIN","Kullanici giris yapti");
 
         return jwtUtil.generateToken(user.getUsername(), user.getRole().name());
     }

@@ -1,6 +1,7 @@
 package com.web.demo.strategy;
 
 import com.web.demo.dto.Request.TransactionRequestDto;
+import com.web.demo.event.AuditEventPublisher;
 import com.web.demo.model.Balance;
 import com.web.demo.model.Transaction;
 import com.web.demo.model.TransactionStatus;
@@ -10,9 +11,8 @@ import com.web.demo.repository.abstracts.BalanceRepository;
 import com.web.demo.repository.abstracts.TransactionRepository;
 import com.web.demo.service.abstracts.UserService;
 import com.web.demo.service.validation.TransactionValidationService;
-
+import com.web.demo.util.GlobalContext;
 import java.math.BigDecimal;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,18 +23,35 @@ public class TransferStrategy implements TransactionStrategy {
     private final BalanceRepository balanceRepository;
     private final TransactionRepository transactionRepository;
     private final UserService userService;
+     private final AuditEventPublisher auditEventPublisher;
 
-    public TransferStrategy(BalanceRepository balanceRepository, TransactionRepository transactionRepository,
-            UserService userService , TransactionValidationService validationService) {
+    public TransferStrategy(BalanceRepository balanceRepository, 
+            TransactionRepository transactionRepository,
+            UserService userService , 
+            TransactionValidationService validationService,
+            AuditEventPublisher auditEventPublisher) {
         this.balanceRepository = balanceRepository;
         this.transactionRepository = transactionRepository;
         this.userService = userService;
-        this.validationService = validationService ;
+        this.validationService = validationService;
+        this.auditEventPublisher = auditEventPublisher;
     }
 
     @Override
     public TransactionType getType() {
         return TransactionType.TRANSFER;
+    }
+
+    public void logger(Transaction transaction,String action, String details){
+        // Audit loglama
+        auditEventPublisher.publish(
+            "Transaction", 
+            transaction.getTransactionsId(), 
+            action, 
+            details,
+            GlobalContext.getCurrentUsername(),
+            GlobalContext.getIpAddress(),
+            GlobalContext.getUserAgent());
     }
 
     @Transactional
@@ -77,7 +94,10 @@ public class TransferStrategy implements TransactionStrategy {
             transaction.setType(TransactionType.TRANSFER);
             transaction.setStatus(TransactionStatus.SUCCESS);
 
-            return transactionRepository.save(transaction); 
+            transaction = transactionRepository.save(transaction); 
+            logger(transaction,"TRANSFER","Hesaptan hesaba para aktarma işlemi başarılı bir şekilde gerçekleşti");
+
+            return transaction;
 
         } catch (Exception e) {
             // diğer beklenmedik hatalar
@@ -88,7 +108,9 @@ public class TransferStrategy implements TransactionStrategy {
             failedTransaction.setTransactionAmount(request.getTransactionAmount());
             failedTransaction.setType(TransactionType.TRANSFER);
             failedTransaction.setStatus(TransactionStatus.FAILED);
+
             transactionRepository.save(failedTransaction); 
+            logger(failedTransaction,"TRANSFER","Hesaptan hesaba para aktarma işlemi başarısız oldu");
 
            if (e instanceof IllegalArgumentException) throw e;
 

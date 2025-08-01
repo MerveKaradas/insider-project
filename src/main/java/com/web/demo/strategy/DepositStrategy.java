@@ -1,11 +1,13 @@
 package com.web.demo.strategy;
 
 import com.web.demo.dto.Request.TransactionRequestDto;
+import com.web.demo.event.AuditEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.web.demo.repository.abstracts.BalanceRepository;
 import com.web.demo.service.abstracts.UserService;
 import com.web.demo.service.validation.DepositValidationService;
+import com.web.demo.util.GlobalContext;
 import com.web.demo.model.User;
 import com.web.demo.model.Transaction;
 import com.web.demo.model.Balance;
@@ -21,20 +23,35 @@ public class DepositStrategy implements TransactionStrategy {
     private final TransactionRepository transactionRepository;
     private final UserService userService;
     private final DepositValidationService validationService;
+    private final AuditEventPublisher auditEventPublisher;
 
     public DepositStrategy(BalanceRepository balanceRepository,
                            TransactionRepository transactionRepository,
                            UserService userService,
-                           DepositValidationService validationService) {
+                           DepositValidationService validationService,
+                           AuditEventPublisher auditEventPublisher) {
         this.balanceRepository = balanceRepository;
         this.transactionRepository = transactionRepository;
         this.userService = userService;
         this.validationService = validationService;
+        this.auditEventPublisher = auditEventPublisher;
     }
 
     @Override
     public TransactionType getType() {
         return TransactionType.DEPOSIT;
+    }
+
+      public void logger(Transaction transaction,String action, String details){
+        // Audit loglama
+        auditEventPublisher.publish(
+            "Transaction", 
+            transaction.getTransactionsId(), 
+            action, 
+            details,
+            GlobalContext.getCurrentUsername(),
+            GlobalContext.getIpAddress(),
+            GlobalContext.getUserAgent());
     }
 
     @Transactional
@@ -64,7 +81,10 @@ public class DepositStrategy implements TransactionStrategy {
             transaction.setType(TransactionType.DEPOSIT);
             transaction.setStatus(TransactionStatus.SUCCESS);
 
-            return transactionRepository.save(transaction); 
+            transaction = transactionRepository.save(transaction);
+            logger(transaction,"DEPOSIT","Hesaba para yatırma işlemi başarılı bir şekilde gerçekleşti");
+
+            return transaction; 
 
         } catch(Exception e) {
             // Başarısız işlem
@@ -79,8 +99,9 @@ public class DepositStrategy implements TransactionStrategy {
 
             
            if (e instanceof IllegalArgumentException) throw e;
+            e.printStackTrace(); 
 
-            e.printStackTrace(); // TODO : loglama 
+            logger(failedTransaction,"DEPOSIT","Hesaba para yatırma işlemi başarısız oldu");
             throw new RuntimeException("Para yatırma işlemi sırasında beklenmedik bir hata oluştu");
             
         }

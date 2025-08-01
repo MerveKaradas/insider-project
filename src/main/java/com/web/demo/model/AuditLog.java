@@ -17,6 +17,7 @@ public class AuditLog {
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @Column(name = "audit_log_id", nullable = false, updatable = false)
     private Long auditLogId;
 
     @Column(name = "entity_type", nullable = false)
@@ -47,7 +48,8 @@ public class AuditLog {
     public AuditLog() {
     }
 
-    public AuditLog(String entityType, Long entityId, String action, String details, String performedBy, String ipAddress, String userAgent) {
+    public AuditLog(Long auditLogId, String entityType, Long entityId, String action, String details, String performedBy, String ipAddress, String userAgent) {
+        this.auditLogId = auditLogId;
         this.entityType = entityType;
         this.entityId = entityId;
         this.action = action;

@@ -1,11 +1,10 @@
 package com.web.demo.listener;
 
-
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import com.web.demo.service.abstracts.AuditLogService;
 import com.web.demo.event.AuditEvent;
-
 
 @Component
 public class AuditEventListener {
@@ -16,7 +15,8 @@ public class AuditEventListener {
         this.auditLogService = auditLogService;
     }
 
-    @TransactionalEventListener
+    
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handleAuditEvent(AuditEvent event) {
         auditLogService.saveAuditLog(
             event.getEntityType(),
