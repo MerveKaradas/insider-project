@@ -16,13 +16,23 @@ spring:
     baseline-on-migrate: true
     clean-disabled: false
 
-
   cache:
     type: redis
   data:
     redis:
       host: redis
       port: 6379
+
+# Exchange API
+exchange:
+  api:
+    url: https://api.frankfurter.app
+  rate:
+    cache:
+      ttl:
+        hours: 6
+
+
 
 
 # Log ayarları
