@@ -21,7 +21,7 @@ public class ExchangeController {
 
     @GetMapping
     public ResponseEntity<?> getRate(@RequestParam String from, @RequestParam String to) {
-        BigDecimal rate = exchangeRateService.getExchangeRate(from, to);
+         Map<String,BigDecimal> rate = exchangeRateService.getExchangeRate(from, to);
         return ResponseEntity.ok(Map.of("rate", rate, "from", from, "to", to));
     }
 }
