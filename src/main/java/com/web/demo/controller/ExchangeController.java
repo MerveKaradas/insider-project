@@ -24,4 +24,10 @@ public class ExchangeController {
          Map<String,BigDecimal> rate = exchangeRateService.getExchangeRate(from, to);
         return ResponseEntity.ok(Map.of("rate", rate, "from", from, "to", to));
     }
+
+    @GetMapping("/get-all")
+    public ResponseEntity<?> getAllRate(@RequestParam String from) {
+         Map<String,BigDecimal> rate = exchangeRateService.getAllExchangeRates(from);
+        return ResponseEntity.ok(Map.of("rate",rate,"from",from));
+    }
 }

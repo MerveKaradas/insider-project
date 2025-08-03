@@ -59,6 +59,33 @@ public class ExchangeRateService {
         }
     }
 
+    public Map<String, BigDecimal> getAllExchangeRates(String baseCurrency) {
+        String url = String.format("%s/latest?base=%s", apiURL, baseCurrency);
+        String key = "exchangeRate_" + baseCurrency + "_ALL";
+
+        try {
+            ExchangeRateResponseDto response = restTemplate.getForObject(url, ExchangeRateResponseDto.class);
+
+            if (response != null && response.getRates() != null) {
+                Map<String, BigDecimal> rates = response.getRates();
+                redisTemplate.opsForValue().set(key, rates, Duration.ofHours(cacheTtl));
+                return rates;
+            } else {
+                throw new RuntimeException("Yanıt hatalı.");
+            }
+
+        } catch (Exception e) {
+            System.err.println("API başarısız, cache'ten çekiliyor: " + e.getMessage());
+            Map<String, BigDecimal> cached = ( Map<String,BigDecimal>)redisTemplate.opsForValue().get(key);
+            if (cached != null) {
+                return cached;
+            } else {
+                throw new RuntimeException("Kur alınamadı ve cache de boş.");
+            }
+        }
+    }
+
+
      
     // Cache her gün 01:00'da temizlenecek
     @Scheduled(cron = "0 0 1 * * *")
