@@ -143,7 +143,21 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		
+        <!-- Resilience4j ile Circuit Breaker -->
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-spring-boot3</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
+  		<!-- Resilience4j ile Bulkhead -->
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-bulkhead</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
+
 
 
 	</dependencies>

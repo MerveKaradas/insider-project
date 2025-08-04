@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.web.demo.service.abstracts.BalanceService;
 import com.web.demo.util.GlobalContext;
+
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+
 import com.web.demo.repository.abstracts.BalanceRepository;
 import com.web.demo.dto.Response.BalanceAtTimeResponseDto;
 import com.web.demo.dto.Response.BalanceResponseDto;
@@ -98,6 +101,7 @@ public class BalanceServiceManager implements BalanceService {
 
     @Override
     @Transactional
+   // TODO :  @Bulkhead(name = "longCalls",  type = Bulkhead.Type.THREADPOOL, fallbackMethod = "fallback") metot asenkrona çekilince düzenlenecek
     public HistoricalBalanceResponseDto historicalBalance(String email, LocalDateTime start, LocalDateTime end) {
 
         User user = userRepository.findByEmail(email)

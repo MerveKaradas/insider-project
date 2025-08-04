@@ -10,6 +10,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.web.demo.dto.Response.ExchangeRateResponseDto;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 
 @Service
 public class ExchangeRateService {
@@ -31,58 +34,99 @@ public class ExchangeRateService {
     }
 
 
-    public  Map<String,BigDecimal> getExchangeRate(String from, String to) {
+    @CircuitBreaker(name = "myService", fallbackMethod = "fallbackMethod")
+    @Retry(name = "myRetryService", fallbackMethod = "fallbackRetry")
+    @RateLimiter(name = "myRateLimitedService")
+    public Map<String, BigDecimal> getExchangeRate(String from, String to) {
         String key = "exchangeRate_" + from + "_" + to;
         String url = String.format("%s/latest?from=%s&to=%s", apiURL, from, to);
 
-        try {
-            ExchangeRateResponseDto response = restTemplate.getForObject(url, ExchangeRateResponseDto.class);
+        ExchangeRateResponseDto response = restTemplate.getForObject(url, ExchangeRateResponseDto.class);
 
-            if (response != null && response.getRates() != null) {
-                 Map<String,BigDecimal> rate = response.getRates();
-
-                redisTemplate.opsForValue().set(key, rate, Duration.ofHours(cacheTtl));
-                return rate;
-            } else {
-                throw new RuntimeException("Yanıt hatalı.");
-            }
-
-        } catch (Exception e) {
-            System.err.println("Kur verisi alınamadı, cache'e bakıyoruz: " + e.getMessage());
-
-             Map<String,BigDecimal> cachedRate = ( Map<String,BigDecimal>) redisTemplate.opsForValue().get(key);
-            if (cachedRate != null) {
-                return cachedRate;
-            } else {
-                throw new RuntimeException("Kur alınamadı ve cache de boş: " + from + " -> " + to);
-            }
+        if (response != null && response.getRates() != null) {
+            Map<String, BigDecimal> rate = response.getRates();
+            redisTemplate.opsForValue().set(key, rate, Duration.ofHours(cacheTtl));
+            return rate;
+        } else {
+            throw new RuntimeException("Yanıt hatalı.");
         }
     }
 
+
+    @CircuitBreaker(name = "myService", fallbackMethod = "fallbackAll")
+    @Retry(name = "myRetryService", fallbackMethod = "fallbackRetryAll")
+    @RateLimiter(name = "myRateLimitedService")
     public Map<String, BigDecimal> getAllExchangeRates(String baseCurrency) {
         String url = String.format("%s/latest?base=%s", apiURL, baseCurrency);
         String key = "exchangeRate_" + baseCurrency + "_ALL";
 
-        try {
-            ExchangeRateResponseDto response = restTemplate.getForObject(url, ExchangeRateResponseDto.class);
+        ExchangeRateResponseDto response = restTemplate.getForObject(url, ExchangeRateResponseDto.class);
 
-            if (response != null && response.getRates() != null) {
-                Map<String, BigDecimal> rates = response.getRates();
-                redisTemplate.opsForValue().set(key, rates, Duration.ofHours(cacheTtl));
-                return rates;
-            } else {
-                throw new RuntimeException("Yanıt hatalı.");
-            }
-
-        } catch (Exception e) {
-            System.err.println("API başarısız, cache'ten çekiliyor: " + e.getMessage());
-            Map<String, BigDecimal> cached = ( Map<String,BigDecimal>)redisTemplate.opsForValue().get(key);
-            if (cached != null) {
-                return cached;
-            } else {
-                throw new RuntimeException("Kur alınamadı ve cache de boş.");
-            }
+        if (response != null && response.getRates() != null) {
+            Map<String, BigDecimal> rates = response.getRates();
+            redisTemplate.opsForValue().set(key, rates, Duration.ofHours(cacheTtl));
+            return rates;
+        } else {
+            throw new RuntimeException("Yanıt hatalı.");
         }
+    }
+
+
+    public Map<String, BigDecimal> fallbackMethod(String from, String to, Throwable t) {
+        System.err.println("Fallback devrede: " + t.getMessage());
+
+        String cacheKey = "exchangeRate_" + from + "_" + to;
+        Map<String, BigDecimal> cachedRates = (Map<String, BigDecimal>) redisTemplate.opsForValue().get(cacheKey);
+
+        if (cachedRates != null) {
+            return cachedRates;
+        }
+
+        // Cache yoksa boş map döner
+        return Map.of();
+    }
+
+
+    public Map<String, BigDecimal> fallbackRetry(String from, String to, Throwable t) {
+        System.err.println("Retry fallback devrede: " + t.getMessage());
+
+        // Cache'e bakılır
+        String cacheKey = "exchangeRate_" + from + "_" + to;
+        Map<String, BigDecimal> cachedRates = (Map<String, BigDecimal>) redisTemplate.opsForValue().get(cacheKey);
+
+        if (cachedRates != null) {
+            return cachedRates;
+        }
+
+        return Map.of();
+    }
+
+
+    public Map<String, BigDecimal> fallbackAll(String baseCurrency, Throwable t) {
+        System.err.println("FallbackAll devrede: " + t.getMessage());
+
+        String cacheKey = "exchangeRate_" + baseCurrency + "_ALL";
+        Map<String, BigDecimal> cachedRates = (Map<String, BigDecimal>) redisTemplate.opsForValue().get(cacheKey);
+
+        if (cachedRates != null) {
+            return cachedRates;
+        }
+
+        return Map.of();
+    }
+
+
+    public Map<String, BigDecimal> fallbackRetryAll(String baseCurrency, Throwable t) {
+        System.err.println("Retry fallbackAll devrede: " + t.getMessage());
+
+        String cacheKey = "exchangeRate_" + baseCurrency + "_ALL";
+        Map<String, BigDecimal> cachedRates = (Map<String, BigDecimal>) redisTemplate.opsForValue().get(cacheKey);
+
+        if (cachedRates != null) {
+            return cachedRates;
+        }
+
+        return Map.of();
     }
 
 

@@ -32,8 +32,35 @@ exchange:
       ttl:
         hours: 6
 
-
-
+resilience4j:
+  circuitbreaker:
+    instances:
+      myService:
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 2
+  retry:
+    instances:
+      myRetryService:
+        max-attempts: 3
+        wait-duration: 2s
+  ratelimiter:
+    instances:
+      myRateLimitedService:
+        limit-for-period: 5
+        limit-refresh-period: 1s
+        timeout-duration: 0
+  thread-pool-bulkhead:
+    instances:
+      longCalls:
+        core-thread-pool-size: 3        # core thread sayısı
+        max-thread-pool-size: 5         # max thread sayısı (core'dan büyük veya eşit)
+        queue-capacity: 10
+      shortCalls:
+        core-thread-pool-size: 5
+        max-thread-pool-size: 10
+        queue-capacity: 50
 
 # Log ayarları
 logging:
