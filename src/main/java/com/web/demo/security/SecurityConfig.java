@@ -30,6 +30,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/exchange/**").permitAll()
                         .requestMatchers("/api/v1/transactions/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/swagger.html","/swagger-ui/**", "/swagger-ui.html", "/docs/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")   // sadece admin
                         .anyRequest().authenticated()
                 )
