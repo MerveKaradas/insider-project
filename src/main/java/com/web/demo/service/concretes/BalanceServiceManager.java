@@ -8,10 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.web.demo.service.abstracts.BalanceService;
 import com.web.demo.util.GlobalContext;
-
-import io.github.resilience4j.bulkhead.annotation.Bulkhead;
-
 import com.web.demo.repository.abstracts.BalanceRepository;
+import com.web.demo.aspect.ReadOnly;
 import com.web.demo.dto.Response.BalanceAtTimeResponseDto;
 import com.web.demo.dto.Response.BalanceResponseDto;
 import com.web.demo.dto.Response.HistoricalBalanceResponseDto;
@@ -60,6 +58,7 @@ public class BalanceServiceManager implements BalanceService {
     }
 
     @Transactional
+    @ReadOnly
     public BalanceResponseDto currentBalanceByEmail(String email) {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("Kayıtlı kullanıcı bulunamadı"));

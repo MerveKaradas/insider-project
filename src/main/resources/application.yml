@@ -2,11 +2,20 @@
 # Ortam bağımsız ayarlar 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/walletdb # Veritabanı URL'si
-    driver-class-name: org.postgresql.Driver # PostgreSQL sürücüsü
-    platform: postgres # Postgre veritabanı platformu. Kullanmak istediğiniz veritabanı türüne göre değiştirilebilir
-    username: postgres #
-    password: 12345 
+    master:
+      url: jdbc:postgresql://postgres-master:5432/walletdb # Veritabanı URL'si
+      driver-class-name: org.postgresql.Driver # PostgreSQL sürücüsü
+      platform: postgres # Postgre veritabanı platformu. Kullanmak istediğiniz veritabanı türüne göre değiştirilebilir
+      username: postgres #
+      password: 12345 
+    replica:
+      url: jdbc:postgresql://postgres-replica:5433/walletdb # Replika
+      username: postgres #
+      password: 12345 
+      driver-class-name: org.postgresql.Driver # PostgreSQL sürücüsü
+      platform: postgres # Postgre veritabanı platformu. Kullanmak istediğiniz verit
+
+
   jpa:
     hibernate:
       ddl-auto: validate # Hibernate DDL otomatik güncelleme ayarı. validate yaptık çünkü tabloları Flyway ile biz oluşturacağız.

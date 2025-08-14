@@ -10,17 +10,17 @@ services:
       - ./app.jar:/app.jar
     command: ["java", "-jar", "/app.jar"]
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/walletdb
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-master:5432/walletdb
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=12345
     depends_on:
-      - postgres
+      - postgres-master
     networks:
       - monitoring
 
-  postgres:
+  postgres-master:
     image: postgres:15
-    container_name: postgres
+    container_name: postgres-master
     environment:
       POSTGRES_DB: walletdb
       POSTGRES_USER: postgres
@@ -28,7 +28,22 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - master_data:/var/lib/postgresql/data
+    networks:
+      - monitoring
+  postgres-replica:
+    image: postgres:15
+    container_name: postgres-replica
+    environment:
+      POSTGRES_DB: walletdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - "5433:5432"
+    depends_on:
+      - postgres-master
+    volumes:
+      - replica_data:/var/lib/postgresql/data
     networks:
       - monitoring
 
@@ -69,7 +84,8 @@ services:
 
 
 volumes:
-  pgdata:
+  master_data:
+  replica_data:
 
 networks:
   monitoring:
