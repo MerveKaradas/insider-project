@@ -22,11 +22,11 @@ services:
     image: postgres:15
     container_name: postgres-master
     environment:
-      POSTGRES_DB: walletdb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT_MASTER}:5432"
     volumes:
       - master_data:/var/lib/postgresql/data
     networks:
@@ -35,11 +35,11 @@ services:
     image: postgres:15
     container_name: postgres-replica
     environment:
-      POSTGRES_DB: walletdb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5433:5432"
+      - "${POSTGRES_PORT_REPLICA}:5432"
     depends_on:
       - postgres-master
     volumes:

@@ -6,6 +6,7 @@ target/
 !**/src/test/**/target/
 secret.txt
 loglamasecret.txt
+.env
 
 ### STS ###
 .apt_generated
