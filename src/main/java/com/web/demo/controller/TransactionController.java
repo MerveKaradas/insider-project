@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.web.demo.service.abstracts.TransactionService;
 import com.web.demo.dto.Request.DepositRequestDto;
 import com.web.demo.dto.Request.TransactionRequestDto;
+import com.web.demo.dto.Request.TransferRequestDto;
 import com.web.demo.dto.Request.WithdrawRequestDto;
 import com.web.demo.dto.Response.TransactionResponseDto;
 import com.web.demo.mapper.TransactionMapper;
@@ -86,9 +87,16 @@ public class TransactionController {
     @PostMapping("/transfer")
     public ResponseEntity<TransactionResponseDto> transferTransaction(
             @AuthenticationPrincipal User user,
-            @RequestBody TransactionRequestDto request) {
+            @RequestBody TransferRequestDto request) {
 
-        Transaction transaction = transactionService.executeTransaction(request, user.getEmail());
+
+            TransactionRequestDto dto = new TransactionRequestDto(
+            user.getId(), 
+            request.getToUserId(), 
+            request.getTransactionAmount(),
+            TransactionType.TRANSFER
+        );
+        Transaction transaction = transactionService.executeTransaction(dto, user.getEmail());
 
         return ResponseEntity.ok(TransactionMapper.toDto(transaction));
     } 
