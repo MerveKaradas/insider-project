@@ -33,10 +33,12 @@ public class UserServiceManager implements  UserService {
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.auditEventPublisher = auditEventPublisher;
+        
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public UserResponseDto register(UserRequestDto requestDto) {
         // Email kontrolü
         if (userRepository.existsByEmail(requestDto.getEmail())) {
@@ -75,23 +77,25 @@ public class UserServiceManager implements  UserService {
     
     @Cacheable(value = "users")
     public List<UserResponseDto> getAllUsers() {
-        return userRepository.findAll()
+        return userRepository.findAllByDeletedAtIsNull()
                 .stream()
                 .map(UserMapper::toDto)
                 .collect(Collectors.toList());
     }
+    
 
     public UserResponseDto getUserById(Long id) {
-        return userRepository.findById(id)
+        return userRepository.findByIdAndDeletedAtIsNull(id)
                 .map(UserMapper::toDto)
                 .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
     }
 
 
     @Transactional
+    @CacheEvict(value = "users", allEntries = true) // Cache temizleme
     public UserResponseDto updateUser(Long id, UserRequestDto requestDto) {
 
-        User user = userRepository.findById(id)
+        User user = userRepository.findByIdAndDeletedAtIsNull(id)
             .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
 
         if (!user.getEmail().equals(requestDto.getEmail()) &&
@@ -127,19 +131,21 @@ public class UserServiceManager implements  UserService {
 
 
     @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
 
         logger(user,"DELETE","Kullanici kaydi silindi");
 
-        userRepository.delete(user);
+        user.softDelete();
+        userRepository.save(user);
 
     }
 
     @Transactional
     public String login(String email, String rawPassword) {
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> new AuthenticationException("Geçersiz kullanıcı adı veya şifre"));
 
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
@@ -168,7 +174,7 @@ public class UserServiceManager implements  UserService {
     @Override
     public User findByUsername(String username) {
         
-        return userRepository.findByUsername(username).orElseThrow(
+        return userRepository.findByUsernameAndDeletedAtIsNull(username).orElseThrow(
             () -> new IllegalArgumentException(username + " kullanicisi bulunamadi")
         );
     }

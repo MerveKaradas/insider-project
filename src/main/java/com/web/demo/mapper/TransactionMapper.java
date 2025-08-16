@@ -20,8 +20,8 @@ public class TransactionMapper {
     public static TransactionResponseDto toDto(Transaction transaction){
         return new TransactionResponseDto(
             transaction.getTransactionsId(),
-            transaction.getFromUserId().getId(),
-            transaction.getToUserId().getId(),
+            transaction.getFromUser().getId(),
+            transaction.getToUser().getId(),
             transaction.getTransactionAmount(),
             transaction.getTransactionsCreatedAt(),
             transaction.getStatus(),

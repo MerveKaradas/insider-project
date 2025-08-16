@@ -88,8 +88,8 @@ public class TransferStrategy implements TransactionStrategy {
 
             // Başarılı işlem
             Transaction transaction = new Transaction();
-            transaction.setFromUserId(fromUser); 
-            transaction.setToUserId(toUser);
+            transaction.setFromUser(fromUser); 
+            transaction.setToUser(toUser);
             transaction.setTransactionAmount(request.getTransactionAmount());
             transaction.setType(TransactionType.TRANSFER);
             transaction.setStatus(TransactionStatus.SUCCESS);
@@ -103,8 +103,8 @@ public class TransferStrategy implements TransactionStrategy {
             // diğer beklenmedik hatalar
 
             Transaction failedTransaction = new Transaction();
-            failedTransaction.setFromUserId(fromUser); 
-            failedTransaction.setToUserId(toUser);
+            failedTransaction.setFromUser(fromUser); 
+            failedTransaction.setToUser(toUser);
             failedTransaction.setTransactionAmount(request.getTransactionAmount());
             failedTransaction.setType(TransactionType.TRANSFER);
             failedTransaction.setStatus(TransactionStatus.FAILED);

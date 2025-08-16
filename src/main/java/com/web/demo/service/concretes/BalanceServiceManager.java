@@ -109,7 +109,7 @@ public class BalanceServiceManager implements BalanceService {
         List<HistoricalBalanceResponseDto.Snapshot> snapshots = new ArrayList<>();
 
         // İlgili zaman aralığındaki işlemler
-        List<Transaction> transactions = transactionRepository.findAllByUserIdAndCreatedAtBetween(user.getId(), start, end);
+        List<Transaction> transactions = transactionRepository.findAllByUserAndCreatedAtBetween(user.getId(), start, end);
 
         for (Transaction transaction : transactions) {
             LocalDateTime time = transaction.getTransactionsCreatedAt(); 

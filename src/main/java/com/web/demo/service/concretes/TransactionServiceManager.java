@@ -58,7 +58,7 @@ public class TransactionServiceManager implements TransactionService {
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadi"));
 
-        return transactionRepository.findAllByFromUserId_IdOrToUserId_IdOrderByTransactionsCreatedAtDesc(user.getId(), user.getId());
+        return transactionRepository.findAllByFromUser_IdOrToUser_IdOrderByTransactionsCreatedAtDesc(user.getId(), user.getId());
     
     }
 
@@ -71,8 +71,8 @@ public class TransactionServiceManager implements TransactionService {
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new RuntimeException("İşlem bulunamadı"));
 
-        if (!transaction.getFromUserId().getId().equals(user.getId()) &&
-            !transaction.getToUserId().getId().equals(user.getId())) {
+        if (!transaction.getFromUser().getId().equals(user.getId()) &&
+            !transaction.getToUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("Bu işleme erişim yetkiniz yok");
         }
 

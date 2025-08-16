@@ -75,8 +75,8 @@ public class DepositStrategy implements TransactionStrategy {
             balanceRepository.save(balance); 
 
             Transaction transaction = new Transaction();
-            transaction.setFromUserId(systemUser); 
-            transaction.setToUserId(user);
+            transaction.setFromUser(systemUser); 
+            transaction.setToUser(user);
             transaction.setTransactionAmount(request.getTransactionAmount());
             transaction.setType(TransactionType.DEPOSIT);
             transaction.setStatus(TransactionStatus.SUCCESS);
@@ -89,8 +89,8 @@ public class DepositStrategy implements TransactionStrategy {
         } catch(Exception e) {
             // Başarısız işlem
             Transaction failedTransaction = new Transaction();
-            failedTransaction.setFromUserId(systemUser); 
-            failedTransaction.setToUserId(user);
+            failedTransaction.setFromUser(systemUser); 
+            failedTransaction.setToUser(user);
             failedTransaction.setTransactionAmount(request.getTransactionAmount());
             failedTransaction.setType(TransactionType.DEPOSIT);
             failedTransaction.setStatus(TransactionStatus.FAILED);

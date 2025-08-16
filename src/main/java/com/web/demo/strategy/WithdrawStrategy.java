@@ -80,8 +80,8 @@ public class WithdrawStrategy implements TransactionStrategy {
 
             // Transaction oluşturma (Başarılı)
             Transaction transaction = new Transaction();
-            transaction.setFromUserId(user); 
-            transaction.setToUserId(systemUser);
+            transaction.setFromUser(user); 
+            transaction.setToUser(systemUser);
             transaction.setTransactionAmount(request.getTransactionAmount());
             transaction.setType(TransactionType.WITHDRAWAL);
             transaction.setStatus(TransactionStatus.SUCCESS);
@@ -95,8 +95,8 @@ public class WithdrawStrategy implements TransactionStrategy {
 
             // Başarısız işlem
             Transaction failedTransaction = new Transaction();
-            failedTransaction.setFromUserId(user); 
-            failedTransaction.setToUserId(systemUser);
+            failedTransaction.setFromUser(user); 
+            failedTransaction.setToUser(systemUser);
             failedTransaction.setTransactionAmount(request.getTransactionAmount());
             failedTransaction.setType(TransactionType.WITHDRAWAL);
             failedTransaction.setStatus(TransactionStatus.FAILED);

@@ -16,6 +16,12 @@ List<User> findAll();
 Optional<User> findByEmail(String email);
 Optional<User> findByUsername(String username);
 
+
+Optional<User> findByIdAndDeletedAtIsNull(Long id);
+Optional<User> findByEmailAndDeletedAtIsNull(String email);
+Optional<User> findByUsernameAndDeletedAtIsNull(String username);
+List<User> findAllByDeletedAtIsNull();
+
    
     
 }

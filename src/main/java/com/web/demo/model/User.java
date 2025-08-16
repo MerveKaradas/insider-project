@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,8 +23,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-
 
 @Entity
 @EntityListeners(AuditingEntityListener.class) //entity nesnelerinde otomatik olarak tarih/saat gibi izleme alanlarını doldurmak için kullanılan dinleyicidir.JPA tarafından sağlanır.
@@ -55,6 +56,8 @@ public class User implements UserDetails {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    private LocalDateTime deletedAt;
+
     public User() {
        
     }
@@ -66,6 +69,8 @@ public class User implements UserDetails {
         this.role = role;
     }
 
+
+    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
@@ -100,6 +105,15 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public void softDelete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+      public void restore() {
+        this.deletedAt = null;
+    }
+
 
     public Long getId() {
         return id;

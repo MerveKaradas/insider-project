@@ -33,11 +33,11 @@ public class Transaction {
 
     @ManyToOne(fetch = FetchType.LAZY) // FetchType.LAZY, ilişkili verilerin yalnızca ihtiyaç duyulduğunda yüklenmesini sağlar.
     @JoinColumn(name = "from_user_id", nullable = false)
-    private User fromUserId;
+    private User fromUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_user_id", nullable = false)
-    private User toUserId;
+    private User toUser;
 
     @Column(name = "transaction_amount", nullable = false)
     private BigDecimal transactionAmount;
@@ -59,8 +59,8 @@ public class Transaction {
     }
 
     public Transaction(User fromUserId, User to_userId, BigDecimal transactions_amount, TransactionType type, TransactionStatus status) {
-        this.fromUserId = fromUserId;
-        this.toUserId = to_userId;
+        this.fromUser = fromUserId;
+        this.toUser = to_userId;
         this.transactionAmount = transactions_amount;
         this.type = type;
         this.status = status;
@@ -76,23 +76,23 @@ public class Transaction {
     }
 
 
-    public User getFromUserId() {
-        return fromUserId;
+    public User getFromUser() {
+        return fromUser;
     }
 
 
-    public void setFromUserId(User from_userId) {
-        this.fromUserId = from_userId;
+    public void setFromUser(User from_userId) {
+        this.fromUser = from_userId;
     }
 
 
-    public User getToUserId() {
-        return toUserId;
+    public User getToUser() {
+        return toUser;
     }
 
 
-    public void setToUserId(User to_userId) {
-        this.toUserId = to_userId;
+    public void setToUser(User to_userId) {
+        this.toUser = to_userId;
     }
 
 
