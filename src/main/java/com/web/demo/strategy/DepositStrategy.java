@@ -59,7 +59,7 @@ public class DepositStrategy implements TransactionStrategy {
     public Transaction processTransaction(TransactionRequestDto request) {
 
         // Kullanıcı bulma
-        User user = userService.findById(request.getFromUserId()); 
+        User user = userService.findById(request.getToUserId()); 
         User systemUser = userService.findByUsername("system");
 
         System.out.println("Gelen kullanici id : " + user.getId() +  " " + user.getEmail() + "  balanceuserid : " + balanceRepository.findByBalancesUserId_Id(request.getFromUserId()));

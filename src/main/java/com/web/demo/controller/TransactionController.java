@@ -10,10 +10,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.web.demo.service.abstracts.TransactionService;
+import com.web.demo.dto.Request.DepositRequestDto;
 import com.web.demo.dto.Request.TransactionRequestDto;
+import com.web.demo.dto.Request.WithdrawRequestDto;
 import com.web.demo.dto.Response.TransactionResponseDto;
 import com.web.demo.mapper.TransactionMapper;
 import com.web.demo.model.Transaction;
+import com.web.demo.model.TransactionType;
 import com.web.demo.model.User;
 
 @RestController
@@ -39,9 +42,16 @@ public class TransactionController {
     @PostMapping("/deposit")
     public ResponseEntity<TransactionResponseDto> depositTransaction(
             @AuthenticationPrincipal User user,
-            @RequestBody TransactionRequestDto request) {
+            @RequestBody DepositRequestDto request) {
 
-        Transaction transaction = transactionService.executeTransaction(request, user.getEmail());
+        TransactionRequestDto dto = new TransactionRequestDto(
+            null, // fromUser = system
+            user.getId(),
+            request.getTransactionAmount(),
+            TransactionType.DEPOSIT
+        );
+
+        Transaction transaction = transactionService.executeTransaction(dto, user.getEmail());
 
         return ResponseEntity.ok(TransactionMapper.toDto(transaction));
     } 
@@ -49,9 +59,16 @@ public class TransactionController {
     @PostMapping("/withdraw")
     public ResponseEntity<TransactionResponseDto> withdrawTransaction(
             @AuthenticationPrincipal User user,
-            @RequestBody TransactionRequestDto request) {
+            @RequestBody WithdrawRequestDto request) {
 
-        Transaction transaction = transactionService.executeTransaction(request, user.getEmail());
+         TransactionRequestDto dto = new TransactionRequestDto(
+            user.getId(), 
+            null, 
+            request.getTransactionAmount(),
+            TransactionType.WITHDRAWAL
+        );
+
+        Transaction transaction = transactionService.executeTransaction(dto, user.getEmail());
 
         return ResponseEntity.ok(TransactionMapper.toDto(transaction));
     } 
