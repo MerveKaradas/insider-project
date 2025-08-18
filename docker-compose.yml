@@ -10,9 +10,11 @@ services:
       - ./app.jar:/app.jar
     command: ["java", "-jar", "/app.jar"]
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-master:5432/walletdb
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=12345
+      - JWT_SECRET= MySuperSecretKeyMySuperSecretKey123!
+      - JWT_EXPIRATION= 86400000 # 1 gün
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-master:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
     depends_on:
       - postgres-master
     networks:

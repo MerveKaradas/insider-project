@@ -14,7 +14,8 @@ spring:
       password: 12345 
       driver-class-name: org.postgresql.Driver # PostgreSQL sürücüsü
       platform: postgres # Postgre veritabanı platformu. Kullanmak istediğiniz verit
-
+  config:
+    import: optional:classpath:.env
 
   jpa:
     hibernate:
@@ -76,6 +77,10 @@ logging:
   level:
     root: WARN # default WARN
     com.web.demo: INFO # Sadece kendi package
+
+jwt : 
+  secret: ${JWT_SECRET} # JWT gizli anahtarı
+  expiration: ${JWT_EXPIRATION} # JWT geçerlilik süresi (ms cinsinden)
 
 
 management:
