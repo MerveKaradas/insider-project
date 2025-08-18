@@ -37,7 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
         String authHeader = request.getHeader("Authorization");
-        String email = null;
+        Long userId = null;
         String token = null;
 
         // Public path'ler için filtreyi atla
@@ -49,29 +49,36 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // Authorization header kontrol
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
-            try {
-                email = jwtUtil.getEmailFromToken(token); 
-                System.out.println("Açılmış email from JWT: " + email);
+             try {
+                userId = jwtUtil.getUserIdFromToken(token);
+                System.out.println("Açılmış userId from JWT: " + userId);
             } catch (Exception e) {
-                System.out.println("Token'dan email alma hatası: " + e.getMessage());
+                System.out.println("Token'dan userId alma hatası: " + e.getMessage());
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token geçersiz veya süresi dolmuş.");
+                return;
             }
         }
 
         // Email varsa ve SecurityContext boşsa, kimlik doğrulama yapılır
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+               try {
+                UserDetails userDetails = userDetailsService.loadUserById(userId);
 
-            if (jwtUtil.validateToken(token)) { 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                if (jwtUtil.validateToken(token)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            } catch (Exception e) {
+                // Kullanıcı bulunamadı veya silinmiş
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Kullanıcı bulunamadı veya silinmiş.");
+                return;
             }
         }
 
         filterChain.doFilter(request, response);
-    }
-
     
+
+    }
 }
