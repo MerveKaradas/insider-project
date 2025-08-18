@@ -13,13 +13,20 @@ public class CustomUserDetailsService  implements UserDetailsService{
 
     public CustomUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
-    }
+    }      
 
+
+    // Email üzerinden login için
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepository.findByEmailAndDeletedAtIsNull(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + email));
+    }
 
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Kayıtlı kullanıcı bulunamadı"));
+    // JWT içerisindeki userId ile yükleme için
+    public UserDetails loadUserById(Long userId) throws UsernameNotFoundException {
+        return userRepository.findByIdAndDeletedAtIsNull(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + userId));
     }
     
 }

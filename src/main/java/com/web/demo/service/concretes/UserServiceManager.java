@@ -1,8 +1,14 @@
 package com.web.demo.service.concretes;
 
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.web.demo.dto.Request.UserRequestDto;
+import com.web.demo.dto.Request.UserUpdateEmailRequestDto;
+import com.web.demo.dto.Request.UserUpdatePasswordRequestDto;
+import com.web.demo.dto.Request.UserUpdateRequestDto;
+import com.web.demo.dto.Request.UserUpdateUsernameRequestDto;
 import com.web.demo.dto.Response.UserResponseDto;
 import com.web.demo.event.AuditEventPublisher;
 import com.web.demo.exception.UserAlreadyExistsException;
@@ -93,20 +99,26 @@ public class UserServiceManager implements  UserService {
 
     @Transactional
     @CacheEvict(value = "users", allEntries = true) // Cache temizleme
-    public UserResponseDto updateUser(Long id, UserRequestDto requestDto) {
+    public UserResponseDto updateUser(UserDetails userDetails, UserUpdateRequestDto requestDto) {
 
-        User user = userRepository.findByIdAndDeletedAtIsNull(id)
+        User user = userRepository.findByEmailAndDeletedAtIsNull(userDetails.getUsername())
             .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
 
-        if (!user.getEmail().equals(requestDto.getEmail()) &&
+        if (requestDto.getEmail() != null &&
+            !requestDto.getEmail().isEmpty() &&
+            !user.getEmail().equals(requestDto.getEmail()) &&
             userRepository.existsByEmail(requestDto.getEmail())) {
             throw new UserAlreadyExistsException("Bu email zaten kullanılıyor.");
         }
 
-        if (!user.getUsername().equals(requestDto.getUsername()) &&
+
+        if (requestDto.getUsername() != null &&
+            !requestDto.getUsername().isEmpty() &&
+            !user.getUsername().equals(requestDto.getUsername()) &&
             userRepository.existsByUsername(requestDto.getUsername())) {
             throw new UserAlreadyExistsException("Bu kullanıcı adı zaten kullanılıyor.");
         }
+
 
         //Guncelleme islemi
         if (requestDto.getUsername() != null && !requestDto.getUsername().isEmpty()) {
@@ -127,6 +139,71 @@ public class UserServiceManager implements  UserService {
 
         return UserMapper.toDto(updatedUser);
     
+    }
+
+
+    @Transactional
+    @CacheEvict(value = "users", allEntries = true) // Cache temizleme
+    public void updatePassword(Long userId, UserUpdatePasswordRequestDto requestDto) {
+
+       User user = userRepository.findByIdAndDeletedAtIsNull(userId)
+            .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
+
+        // Eski şifre doğru mu kontrol et
+        if (!passwordEncoder.matches(requestDto.getOldPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Eski parola hatalı!");
+        }
+
+        // Yeni şifre encode edilip kaydedilir - Burada sifre kurallarına bakılmadı cünkü DTO'da zaten kontrol ediliyor
+        user.setPassword(passwordEncoder.encode(requestDto.getNewPassword()));
+
+       logger(user,"UPDATE","Kullanici sifre kaydi guncellendi");
+        
+        userRepository.save(user);
+    }
+
+    @Transactional
+    @CacheEvict(value = "users", allEntries = true) // Cache temizleme
+    public void updateEmail(Long userId, UserUpdateEmailRequestDto requestDto) {
+
+       User user = userRepository.findByIdAndDeletedAtIsNull(userId)
+            .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
+
+
+        // Aynı email başka kullanıcıya ait mi?
+          if (requestDto.getNewEmail() != null &&
+            !requestDto.getNewEmail().isEmpty() &&
+            !user.getEmail().equals(requestDto.getNewEmail()) &&
+            userRepository.existsByEmail(requestDto.getNewEmail())) {
+            throw new UserAlreadyExistsException("Bu email zaten kullanılıyor.");
+        }
+
+        user.setEmail(requestDto.getNewEmail());
+
+        logger(user, "UPDATE", "Kullanici email kaydi guncellendi");
+
+        userRepository.save(user);
+    }
+
+    @Transactional
+    @CacheEvict(value = "users", allEntries = true) // Cache temizleme
+    public void updateUsername(Long userId, UserUpdateUsernameRequestDto requestDto) {
+
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
+            .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
+
+        if (requestDto.getUsername() != null &&
+            !requestDto.getUsername().isEmpty() &&
+            !user.getUsername().equals(requestDto.getUsername()) &&
+            userRepository.existsByUsername(requestDto.getUsername())) {
+            throw new UserAlreadyExistsException("Bu kullanıcı adı zaten kullanılıyor.");
+        }
+
+        user.setUsername(requestDto.getUsername());
+
+        logger(user, "UPDATE", "Kullanici username kaydi guncellendi");
+
+        userRepository.save(user);
     }
 
 
@@ -154,7 +231,7 @@ public class UserServiceManager implements  UserService {
 
         logger(user,"LOGIN","Kullanici giris yapti");
 
-        return jwtUtil.generateToken(user.getUsername(), user.getRole().name());
+        return jwtUtil.generateToken(user);
     }
 
 
