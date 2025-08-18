@@ -98,7 +98,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.email; // Email üzerinden giriş yapılacağı için burada email dönüyoruz
+        return this.username;
     }
 
     @Override
