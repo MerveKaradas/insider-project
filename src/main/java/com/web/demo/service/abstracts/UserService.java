@@ -7,9 +7,6 @@ import com.web.demo.dto.Request.UserUpdateRequestDto;
 import com.web.demo.dto.Request.UserUpdateUsernameRequestDto;
 import com.web.demo.dto.Response.UserResponseDto;
 import com.web.demo.model.User;
-
-import jakarta.validation.Valid;
-
 import java.util.List;
 
 import org.springframework.security.core.userdetails.UserDetails;

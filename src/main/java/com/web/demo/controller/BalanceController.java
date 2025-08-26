@@ -10,9 +10,13 @@ import com.web.demo.dto.Request.HistoricalBalanceRequestDto;
 import com.web.demo.dto.Response.BalanceAtTimeResponseDto;
 import com.web.demo.dto.Response.BalanceResponseDto;
 import com.web.demo.dto.Response.HistoricalBalanceResponseDto;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.web.demo.service.abstracts.BalanceService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import com.web.demo.model.User;
 
 
@@ -28,26 +32,40 @@ public class BalanceController {
 
     @PostMapping("/create-balance")
     public ResponseEntity<BalanceResponseDto> createBalance(
-        @AuthenticationPrincipal User user) {
+        @AuthenticationPrincipal UserDetails userDetails) {
 
-        String email = user.getUsername(); 
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = ((User) userDetails).getEmail();
         BalanceResponseDto responseDto = balanceService.createBalance(email);
 
         return ResponseEntity.ok(responseDto);
     }
 
     @GetMapping("/current")
-    public ResponseEntity<BalanceResponseDto> getCurrentBalance(@AuthenticationPrincipal User user) {
-        String email = user.getUsername(); 
+    public ResponseEntity<BalanceResponseDto> getCurrentBalance(
+        @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = ((User) userDetails).getEmail();
         return ResponseEntity.ok(balanceService.currentBalanceByEmail(email));
     }
 
-    @GetMapping("/at-time")
+    @PostMapping("/at-time")
     public ResponseEntity<BalanceAtTimeResponseDto> getBalanceAtTime(
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody BalanceAtTimeRequestDto request) {
 
-        String email = user.getUsername(); 
+         if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = ((User) userDetails).getEmail();
         BalanceAtTimeResponseDto response = balanceService.balanceAtTime(email, request.getAtTime());
         return ResponseEntity.ok(response);
     }
@@ -55,10 +73,14 @@ public class BalanceController {
 
     @PostMapping("/historical") // POST daha mantıklı çünkü body alıyoruz
     public ResponseEntity<HistoricalBalanceResponseDto> getHistoricalBalance(
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody HistoricalBalanceRequestDto request) {
 
-        String email = user.getUsername(); 
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = ((User) userDetails).getEmail();
         HistoricalBalanceResponseDto response = balanceService.historicalBalance(email, request.getStart(), request.getEnd());
         return ResponseEntity.ok(response);
     }
