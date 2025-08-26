@@ -1,6 +1,8 @@
 package com.web.demo.service.concretes;
 
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,12 +35,14 @@ public class UserServiceManager implements  UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuditEventPublisher auditEventPublisher;
+    private final JwtBlacklistService jwtBlacklistService;
 
-    public UserServiceManager(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil,AuditEventPublisher auditEventPublisher) {
+    public UserServiceManager(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil,AuditEventPublisher auditEventPublisher,JwtBlacklistService jwtBlacklistService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.auditEventPublisher = auditEventPublisher;
+        this.jwtBlacklistService = jwtBlacklistService;
         
     }
 
@@ -209,14 +213,31 @@ public class UserServiceManager implements  UserService {
 
     @Transactional
     @CacheEvict(value = "users", allEntries = true)
-    public void deleteUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
+    public void deleteUser(String currentAccessToken) {
+        
+        // Kimliği doğrulanmış kullanıcı
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
+            throw new IllegalStateException("Kullanıcı kimliği doğrulanmamış.");
+        }
 
-        logger(user,"DELETE","Kullanici kaydi silindi");
+        User user = (User) authentication.getPrincipal();
 
         user.softDelete();
+
+        // Token versiyonu artırılıyor
+        user.setTokenVersion(user.getTokenVersion() + 1);
+
         userRepository.save(user);
+
+        //  mevcut access token blacklist’e ekleniyor
+        if (currentAccessToken != null && jwtUtil.validateToken(currentAccessToken)) {
+            String jti = jwtUtil.getJtiFromToken(currentAccessToken);
+            long ttl = jwtUtil.getRemainingTtlSeconds(currentAccessToken);
+            jwtBlacklistService.blacklist(jti, ttl);
+        }
+
+        logger(user,"DELETE","Kullanici kaydi silindi");
 
     }
 

@@ -55,6 +55,10 @@ public class User implements UserDetails {
 
     private LocalDateTime deletedAt;
 
+    @Column(name = "token_version", nullable = false)
+    private Integer tokenVersion = 0;
+
+
     public User() {
        
     }
@@ -159,6 +163,9 @@ public class User implements UserDetails {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'orElseGet'");
     }
+
+    public Integer getTokenVersion() { return tokenVersion; }
+    public void setTokenVersion(Integer tokenVersion) { this.tokenVersion = tokenVersion; }
 
     
 }

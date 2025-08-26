@@ -20,7 +20,7 @@ UserResponseDto register(UserRequestDto requestDto);
 
   //  UserResponseDto updateUser(Long id, UserRequestDto requestDto);
 
-    void deleteUser(Long id);
+    void deleteUser(String currentAccessToken);
 
     String login(String email, String password);
     

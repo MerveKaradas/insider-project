@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import com.web.demo.model.User;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.Claims;
@@ -27,9 +29,13 @@ public class JwtUtil  {
 
     // JWT oluşturma 
     public String generateToken(User user) {
+        
+        String jti = UUID.randomUUID().toString();
         return Jwts.builder()
+                .setId(jti) 
                 .setSubject(user.getId().toString()) 
                 .claim("role", user.getRole().name()) // rol bilgisi
+                .claim("ver", user.getTokenVersion()) // bu versiyon bilgisini daha sonra token geçerliliği için kullanacağız
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime)) // geçerlilik süresi
                 .signWith(key)
@@ -60,14 +66,45 @@ public class JwtUtil  {
     }
 
     // Token'ın geçerliliğini kontrol etme
-     public boolean validateToken(String token) {
+    public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            parseClaims(token);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
+
+    // Token'ın içindeki tüm claim'leri döner
+    public Claims parseClaims(String token) {
+        return Jwts.parserBuilder()
+                   .setSigningKey(key)
+                   .build()
+                   .parseClaimsJws(token)
+                   .getBody();
+    }
+
+
+    // Token'ın versiyonu - claim tokenVersion karşılaştırması için 
+    public Integer getVersionFromToken(String token) {
+        Number n = parseClaims(token).get("ver", Number.class);
+        return n == null ? 0 : n.intValue();
+    }
+
+    // Token'ın jti'sini döner - blacklist veya logging için kullanılacak
+    public String getJtiFromToken(String token) {
+        return parseClaims(token).getId();
+    }
+
+    // Token'ın kalan geçerlilik süresi(saniye) - blacklist'e TTL koymak için
+    public long getRemainingTtlSeconds(String token) { 
+        Date exp = parseClaims(token).getExpiration();
+        long diff = exp.getTime() - System.currentTimeMillis();
+        return Math.max(0L, diff / 1000L);
+    }
+
+    
+
 
     
 }
