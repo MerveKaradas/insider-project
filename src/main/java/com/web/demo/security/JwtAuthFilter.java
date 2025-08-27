@@ -4,17 +4,12 @@ import java.io.IOException;
 import java.util.List;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import com.web.demo.model.User;
 import com.web.demo.repository.abstracts.UserRepository;
-import com.web.demo.service.concretes.CustomUserDetailsService;
 import com.web.demo.service.concretes.JwtBlacklistService;
-import com.web.demo.service.concretes.UserServiceManager;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.util.Objects;

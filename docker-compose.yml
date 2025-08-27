@@ -10,8 +10,8 @@ services:
       - ./app.jar:/app.jar
     command: ["java", "-jar", "/app.jar"]
     environment:
-      - JWT_SECRET= MySuperSecretKeyMySuperSecretKey123!
-      - JWT_EXPIRATION= 86400000 # 1 gün
+      - JWT_SECRET= ${JWT_SECRET}
+      - JWT_EXPIRATION= ${JWT_EXPIRATION}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-master:5432/${POSTGRES_DB}
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
