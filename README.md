@@ -143,7 +143,7 @@ http://localhost:8080/swagger-ui/index.html
 
 **Swagger UI** üzerinden API örnekleri → 
 
-![alt text](image.png)![alt text](image-1.png)![alt text](image-2.png)
+![user contoller](https://github.com/MerveKaradas/insider-project/blob/5d2a02ef91be0ef5cbb184ea7e808ab593938fb8/docs/images/image.png)![transaction](https://github.com/MerveKaradas/insider-project/blob/5d2a02ef91be0ef5cbb184ea7e808ab593938fb8/docs/images/image-1.png)![balance-exchange](https://github.com/MerveKaradas/insider-project/blob/5d2a02ef91be0ef5cbb184ea7e808ab593938fb8/docs/images/image-2.png)
 
 
 
